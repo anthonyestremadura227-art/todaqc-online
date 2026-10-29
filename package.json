@@ -1,12 +1,16 @@
 {
   "name": "todaqc-online",
   "version": "1.0.0",
-  "main": "Backend/server.js",
+  "description": "TODA QC Queue Management - todaqc.online - Thesis",
+  "main": "server.js",
   "scripts": {
-    "start": "node Backend/server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }

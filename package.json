@@ -1,1 +1,20 @@
-
+{
+  "name": "todaqc-online",
+  "version": "1.0.0",
+  "description": "TODA QC - Queue Management System - Web-Based - Thesis Noel Montecillo - todaqc.online",
+  "main": "backend/Server.js",
+  "scripts": {
+    "start": "node backend/Server.js",
+    "dev": "node backend/Server.js"
+  },
+  "keywords": ["toda", "qc", "queue", "tricycle", "thesis", "pwa", "web-app"],
+  "author": "Mark Anthony Naguit",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

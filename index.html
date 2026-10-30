@@ -45,6 +45,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div class="login-card">
 <div class="text-center mb-3"><span style="font-size:44px">🛺</span></div>
 <h5 class="text-center fw-bold">TODA Queue Management</h5>
+<p class="text-center text-muted" style="font-size:10px">Project 8 TODA, Quezon City<br>Web-Based Platform - Thesis Project</p>
 <div class="mt-3">
 <input id="username" class="form-control mb-2" type="text" placeholder="Username" autocomplete="off">
 <input id="password" class="form-control mb-3" type="password" placeholder="Password" autocomplete="new-password">
@@ -57,7 +58,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div id="registerWrapper" class="login-wrapper hidden">
 <div class="login-card">
 <h5 class="text-center fw-bold">Tricycle Driver Registration</h5>
-<p class="text-center text-muted" style="font-size:10px">TODA QC </p>
+<p class="text-center text-muted" style="font-size:10px">TODA QC - Project 8 - Tricycle Registration</p>
 <input id="regName" class="form-control mb-2" type="text" placeholder="Full Name - Name">
 <input id="regUsername" class="form-control mb-2" type="text" placeholder="Username">
 <input id="regPassword" class="form-control mb-2" type="password" placeholder="Password">
@@ -108,7 +109,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div id="page-tricycle-apps" class="page hidden"><div class="content-card"><h6><i class="bi bi-card-checklist"></i> Tricycle Driver Applications - Admin View</h6><p style="font-size:11px;color:#6b7280">Admin will receive applications from tricycle drivers - Name, License, Plate No.</p><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Name</th><th>Username</th><th>License No.</th><th>Plate No.</th><th>Status</th><th>Action</th></tr></thead><tbody id="tricycleAppsTable"></tbody></table></div></div></div>
 <div id="page-boundary" class="page hidden"><div class="content-card"><h6><i class="bi bi-cash-stack"></i> Daily Boundary Remittance</h6><div class="row g-2 mb-3"><div class="col-md-4"><input id="bDriver" class="form-control" placeholder="Driver"></div><div class="col-md-3"><input id="bAmount" class="form-control" type="number" placeholder="Amount"></div><div class="col-md-3"><input id="bDate" class="form-control" type="date"></div><div class="col-md-2"><select id="bStatus" class="form-select"><option>Paid</option><option>Unpaid</option><option>Partial</option></select></div></div><button id="addBoundary" class="btn btn-dark">Record Boundary</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody id="boundaryTable"></tbody></table></div></div></div>
 <div id="page-income" class="page hidden"><div class="content-card"><h6><i class="bi bi-graph-up"></i> Income Reports</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th></tr></thead><tbody id="incomeTable"></tbody></table></div></div></div>
-<div id="page-users" class="page hidden"><div class="content-card"><h6><i class="bi bi-person-gear"></i> User Management</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>License</th><th>Plate No.</th><th>Status</th></tr></thead><tbody id="userTable"></tbody></table></div></div></div>
+<div id="page-users" class="page hidden"><div class="content-card"><h6><i class="bi bi-person-gear"></i> User Management</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>License</th><th>Plate No.</th><th style="width:160px">Password <small style="font-size:9px;color:#6b7280">(Admin Only)</small></th><th>Status</th><th>Action</th></tr></thead><tbody id="userTable"></tbody></table></div></div></div>
 </div>
 </div>
 <script>
@@ -116,11 +117,11 @@ let queue=[],attendance=[],trips=[],boundaries=[],users=[],tricycles=[];
 let currentUser=null;
 const $=id=>document.getElementById(id);
 const loginWrapper=$('loginWrapper'),registerWrapper=$('registerWrapper'),dash=$('dashboard');
-
+// ADMIN ACCOUNTS - EDIT HERE - PWEDE MO PALITAN - TODA QC LANG
 const ADMIN_ACCOUNTS = [
-  { username: 'admin', password: 'smoker123', name: 'Head Admin', role: 'admin', status: 'Active' },
+  { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
   { username: 'adminmark', password: 'admin123', name: 'Mark Anthony Naguit - AdminMark', role: 'admin', status: 'Active' },
-  { username: 'secretarybea', password: 'bea2024', name: 'Secretary Bea', role: 'admin', status: 'Active' }
+  { username: 'secretadmin', password: 'toda2024', name: 'Secret Admin', role: 'admin', status: 'Active' }
 ];
 function saveSession(user){
   sessionStorage.setItem('toda_session', JSON.stringify(user));
@@ -241,6 +242,34 @@ function rejectTricycle(username){
   tricycles = tricycles.map(t=> t.username===username ? {...t, status:'Rejected'} : t);
   saveTricycles(); renderAll();
 }
+function togglePwd(username){
+  const input = document.getElementById('pwd-'+username);
+  const eye = document.getElementById('eye-'+username);
+  if(!input) return;
+  if(input.type==='password'){ input.type='text'; if(eye){ eye.className='bi bi-eye-slash'; } }
+  else{ input.type='password'; if(eye){ eye.className='bi bi-eye'; } }
+}
+function copyPwd(username){
+  const input = document.getElementById('pwd-'+username);
+  if(!input) return;
+  const was = input.type;
+  input.type='text';
+  navigator.clipboard.writeText(input.value).then(()=>{ alert('Password copied: '+input.value); input.type=was; }).catch(()=>{ input.select(); document.execCommand('copy'); alert('Password copied'); input.type=was; });
+}
+function changePwd(username){
+  const newPass = prompt('Enter new password for '+username+':');
+  if(!newPass) return;
+  if(newPass.length<6){ alert('Password must be at least 6 characters'); return; }
+  const idx = users.findIndex(u=>u.username===username);
+  if(idx>=0){
+    users[idx].password=newPass;
+    localStorage.setItem('toda_users_backup', JSON.stringify(users));
+    // Save to backend
+    fetch('/api/users/'+encodeURIComponent(username), {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:newPass})}).then(r=>r.json()).then(d=>{
+      if(d.success){ alert('Password changed for '+username+' to: '+newPass); renderAll(); } else { alert('Local changed, backend may need manual update. New password: '+newPass); renderAll(); }
+    }).catch(()=>{ alert('Password changed locally to: '+newPass); renderAll(); });
+  }
+}
 function deleteTricycle(username){
   if(!confirm('Delete this tricycle application?')) return;
   tricycles = tricycles.filter(t=> t.username!==username);
@@ -278,15 +307,15 @@ async function loadQueue(){
   const local = localStorage.getItem('toda_queue');
   let localQ = [];
   if(local){ try{ localQ=sanitizeQueue(JSON.parse(local)); }catch(e){} }
-
+  // Use backend if has valid data, else local
   if(backendQ.length>0){
     queue = backendQ;
   }else{
     queue = localQ;
   }
-
+  // If still has undefined, force clean
   queue = sanitizeQueue(queue);
-  
+  // Save cleaned version
   localStorage.setItem('toda_queue', JSON.stringify(queue));
   try{ await fetch('/api/queue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }catch(e){}
 }
@@ -385,7 +414,7 @@ function sanitizeTrips(arr){
   return arr.filter(t=> t && t.driver && t.date).map(t=>({id:t.id||Date.now()+Math.random(), date:t.date, driver:t.driver, destination:t.destination||'', passenger:t.passenger||'', fare:t.fare||'', username:t.username||''}));
 }
 function renderAll(){
- 
+  // Sanitize to remove undefined
   attendance = sanitizeAttendance(attendance);
   trips = sanitizeTrips(trips);
   if($('statTotal')) $('statTotal').textContent=users.filter(u=>u.role==='driver').length;
@@ -398,7 +427,7 @@ function renderAll(){
   const uname=q.username||'';
   const isOwn = currentUser && uname===currentUser.username;
   const isAdmin = currentUser && currentUser.role==='admin';
- 
+  // Bawal mag X ng iba - Join/Leave lang - X only own or admin
   const canDelete = isOwn || isAdmin;
   const xBtn = canDelete ? `<button class="btn btn-sm btn-light" style="padding:2px 6px" onclick="deleteQueueByUsername('${uname}')"><i class="bi bi-x-lg"></i></button>` : '';
   return `<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${isOwn?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${name} ${isOwn?'(You - Auto Joined)':''}</span><div class="d-flex gap-1 align-items-center"><span class="badge-status bg-queuing">${time||'Queuing'}</span>${xBtn}</div></div>`; 
@@ -408,8 +437,8 @@ function renderAll(){
   if($('tripTable')) $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteTrip(${t.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
   if($('boundaryTable')) $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteBoundary(${b.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
   if($('incomeTable')) $('incomeTable').innerHTML=boundaries.length?boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td>${b.status}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted">No records yet.</td></tr>';
-  if($('userTable')) $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td>${u.license||'-'}</td><td>${u.plate||'-'}</td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td></tr>`).join('');
-  
+  if($('userTable')) $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td>${u.license||'-'}</td><td>${u.plate||'-'}</td><td><div class="d-flex align-items-center gap-1"><input id="pwd-${u.username}" type="password" value="${(u.password||'').replace(/"/g,'&quot;')}" readonly class="form-control form-control-sm" style="font-size:11px;height:28px;width:90px"><button class="btn btn-sm btn-light" style="font-size:10px;padding:2px 6px" onclick="togglePwd('${u.username}')"><i class="bi bi-eye" id="eye-${u.username}"></i></button><button class="btn btn-sm btn-light" style="font-size:10px;padding:2px 6px" onclick="copyPwd('${u.username}')" title="Copy"><i class="bi bi-clipboard"></i></button></div></td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td><td><button class="btn btn-sm btn-light" style="font-size:10px" onclick="changePwd('${u.username}')"><i class="bi bi-key"></i> Change</button></td></tr>`).join('');
+  // Tricycle
   if($('myTricycleInfo')){
     const mine = tricycles.find(t=> t.username===currentUser?.username) || users.find(u=> u.username===currentUser?.username && u.license);
     if(mine){
@@ -452,13 +481,13 @@ function deleteAttendance(id){
   if(!confirm('Delete this attendance record?')) return;
   attendance = attendance.filter(a=> a.id!==id && a.id!==id.toString());
   if(attendance.length===0 || id===0){
-   
+    // Fallback delete by index if id 0
     attendance = attendance.filter((a,i)=> a.id!==0);
   }
   saveAttendance(); renderAll();
 }
 function deleteQueueByUsername(username){
- 
+  // Bawal mag exis ng iba - check if own or admin
   if(currentUser && currentUser.username!==username && currentUser.role!=='admin'){
     alert('Bawal mag remove ng ibang driver - Join/Leave lang pwede - Hindi pwede mag exis ng kaparehas na driver');
     return;
@@ -485,7 +514,7 @@ if($('addTrip')) $('addTrip').onclick=()=>{
   saveTrips(); $('trDestination').value='';$('trPassenger').value='';$('trFare').value=''; renderAll();
 };
 if($('addBoundary')) $('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({id: Date.now(), date,driver,amount:parseInt(amount),status,username:currentUser?currentUser.username:''}); saveBoundary(); $('bDriver').value='';$('bAmount').value='';renderAll();};
-
+// Enter key support - FIXED - LOG IN LANG
 function handleLoginEnter(e){ if(e.key==='Enter'){ $('loginBtn').click(); } }
 if($('username')) $('username').addEventListener('keydown', handleLoginEnter);
 if($('password')) $('password').addEventListener('keydown', handleLoginEnter);
@@ -493,7 +522,7 @@ if($('regUsername')) $('regUsername').addEventListener('keydown', (e)=>{ if(e.ke
 if($('regPassword')) $('regPassword').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
 if($('regLicense')) $('regLicense').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
 if($('regPlate')) $('regPlate').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
-
+// Login - FIXED - MAG REREKTA SA DASHBOARD
 if($('loginBtn')) $('loginBtn').onclick=async()=>{
   const username=$('username').value.trim(),password=$('password').value.trim();
   if(!username||!password){$('msg').textContent='Please enter username and password';return;}
@@ -519,7 +548,7 @@ if($('loginBtn')) $('loginBtn').onclick=async()=>{
       $('msg').textContent=d.message;
     }
   }catch(e){
-    
+    // Offline fallback - check ADMIN_ACCOUNTS array - TODA QC LANG
     const adminFound = ADMIN_ACCOUNTS.find(a=> a.username===username && a.password===password);
     if(adminFound){
       currentUser=adminFound;
@@ -578,7 +607,7 @@ if($('registerBtn')) $('registerBtn').onclick=async()=>{
     setTimeout(()=>{$('showLogin').click();$('username').value=username;},1500);
   }
 };
-
+// Save Tricycle Info - for existing users
 if($('saveTricycle')) $('saveTricycle').onclick=()=>{
   if(!currentUser){ alert('Please login first'); return; }
   const name=$('tName').value.trim()||currentUser.name, license=$('tLicense').value.trim(), plate=$('tPlate').value.trim();
@@ -589,7 +618,7 @@ if($('saveTricycle')) $('saveTricycle').onclick=()=>{
   }else{
     tricycles.push({name, username:currentUser.username, license, plate, status:'Pending'});
   }
-  
+  // Also update users
   const uIdx = users.findIndex(u=> u.username===currentUser.username);
   if(uIdx>=0){ users[uIdx].license=license; users[uIdx].plate=plate; users[uIdx].name=name; localStorage.setItem('toda_users_backup', JSON.stringify(users)); }
   saveTricycles();
@@ -597,7 +626,7 @@ if($('saveTricycle')) $('saveTricycle').onclick=()=>{
   renderAll();
 };
 if('serviceWorker' in navigator){
-  
+  // Unregister old SW to clear cache
   navigator.serviceWorker.getRegistrations().then(regs=>{ regs.forEach(r=>r.unregister()); });
 }
 renderAll();

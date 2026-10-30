@@ -45,7 +45,6 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div class="login-card">
 <div class="text-center mb-3"><span style="font-size:44px">🛺</span></div>
 <h5 class="text-center fw-bold">TODA Queue Management</h5>
-<p class="text-center text-muted" style="font-size:10px">Project 8 TODA, Quezon City<br>Web-Based Platform - Thesis Project</p>
 <div class="mt-3">
 <input id="username" class="form-control mb-2" type="text" placeholder="Username" autocomplete="off">
 <input id="password" class="form-control mb-3" type="password" placeholder="Password" autocomplete="new-password">
@@ -57,12 +56,14 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 </div>
 <div id="registerWrapper" class="login-wrapper hidden">
 <div class="login-card">
-<h5 class="text-center fw-bold">Create Account</h5>
-<p class="text-center text-muted" style="font-size:10px">Driver / Passenger Registration</p>
-<input id="regName" class="form-control mb-2" type="text" placeholder="Full Name">
+<h5 class="text-center fw-bold">Tricycle Driver Registration</h5>
+<p class="text-center text-muted" style="font-size:10px">TODA QC </p>
+<input id="regName" class="form-control mb-2" type="text" placeholder="Full Name - Name">
 <input id="regUsername" class="form-control mb-2" type="text" placeholder="Username">
 <input id="regPassword" class="form-control mb-2" type="password" placeholder="Password">
-<select id="regRole" class="form-select mb-3"><option value="driver">Driver</option><option value="passenger">Passenger</option></select>
+<input id="regLicense" class="form-control mb-2" type="text" placeholder="License No. - License">
+<input id="regPlate" class="form-control mb-2" type="text" placeholder="Plate No. - Plate No.">
+<input id="regRole" type="hidden" value="driver">
 <button id="registerBtn" class="btn btn-dark w-100">Create Account</button>
 <div class="text-center mt-3"><a href="#" id="showLogin" style="font-size:11px;text-decoration:none">Already have an account? Login</a></div>
 <div id="regMsg" class="text-center mt-2" style="font-size:11px;min-height:16px"></div>
@@ -77,6 +78,8 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div class="nav-item" data-page="queue"><i class="bi bi-list-ol"></i> Queue Management</div>
 <div class="nav-item" data-page="attendance"><i class="bi bi-calendar-check"></i> Attendance</div>
 <div class="nav-item" data-page="trips"><i class="bi bi-signpost-split"></i> Trip History</div>
+<div class="nav-item" data-page="tricycle"><i class="bi bi-truck-front"></i> Tricycle Registration</div>
+<div class="nav-item admin-only-menu" data-page="tricycle-apps"><i class="bi bi-card-checklist"></i> Tricycle Applications</div>
 <div class="nav-item admin-only-menu" data-page="boundary"><i class="bi bi-cash-stack"></i> Boundary Remittance</div>
 <div class="nav-item admin-only-menu" data-page="income"><i class="bi bi-graph-up"></i> Income Reports</div>
 <div class="nav-item admin-only-menu" data-page="users"><i class="bi bi-person-gear"></i> User Management</div>
@@ -84,7 +87,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 </div>
 </div>
 <div class="main-content">
-<div class="topbar"><div><div class="fw-bold" style="font-size:15px" id="pageTitle">Overview Dashboard</div><div style="font-size:11px;color:#6b7280">Web-Based TODA Queue Management and Daily Boundary Remittance System</div></div><div style="font-size:10px;color:#6b7280" id="dateNow"></div></div>
+<div class="topbar"><div><div class="fw-bold" style="font-size:15px" id="pageTitle">Overview Dashboard</div><div style="font-size:11px;color:#6b7280" id="subTitle">TODA QC - Project 8</div></div><div style="font-size:10px;color:#6b7280" id="dateNow"></div></div>
 <div id="page-overview" class="page">
 <div class="row g-3 mb-3">
 <div class="col-md-4"><div class="stat-card"><div class="stat-label">Total Drivers</div><div class="stat-value" id="statTotal">0</div><div class="stat-label">Registered</div></div></div>
@@ -101,21 +104,23 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 </div>
 <div id="page-attendance" class="page hidden"><div class="content-card"><h6><i class="bi bi-calendar-check"></i> Attendance</h6><div class="row g-2 mb-3"><div class="col-md-8"><input id="aDriver" class="form-control" placeholder="Driver Name - Auto-filled"></div><div class="col-md-4"><select id="aStatus" class="form-select"><option>Present</option><option>Absent</option></select></div></div><button id="addAttendance" class="btn btn-dark">Record Attendance</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Status</th><th>Time</th><th>Action</th></tr></thead><tbody id="attendanceTable"></tbody></table></div></div></div>
 <div id="page-trips" class="page hidden"><div class="content-card"><h6><i class="bi bi-signpost-split"></i> Trip History</h6><div class="row g-2 mb-3"><div class="col-md-6"><input id="trDriver" class="form-control" placeholder="Driver - Auto-filled"></div><div class="col-md-6"><input id="trDestination" class="form-control" placeholder="Destination"></div><div class="col-md-6"><input id="trPassenger" class="form-control" placeholder="Passenger"></div><div class="col-md-6"><input id="trFare" class="form-control" type="number" placeholder="Fare"></div></div><button id="addTrip" class="btn btn-dark">Record Trip</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Destination</th><th>Passenger</th><th>Fare</th><th>Action</th></tr></thead><tbody id="tripTable"></tbody></table></div></div></div>
+<div id="page-tricycle" class="page hidden"><div class="content-card"><h6><i class="bi bi-truck-front"></i> My Tricycle Registration</h6><p style="font-size:11px;color:#6b7280">Your tricycle details - Name, License, Plate No.</p><div class="row g-2 mb-3"><div class="col-md-4"><input id="tName" class="form-control" placeholder="Full Name"></div><div class="col-md-4"><input id="tLicense" class="form-control" placeholder="License No."></div><div class="col-md-4"><input id="tPlate" class="form-control" placeholder="Plate No."></div></div><button id="saveTricycle" class="btn btn-dark">Save Tricycle Info</button><div class="mt-3 p-3 rounded" style="background:#f8fafc;border:1px solid #e2e8f0"><div style="font-size:11px;font-weight:700">Current Registration</div><div id="myTricycleInfo" style="font-size:12px;margin-top:8px"><small class="text-muted">No tricycle registered yet. Fill above and save.</small></div></div></div></div>
+<div id="page-tricycle-apps" class="page hidden"><div class="content-card"><h6><i class="bi bi-card-checklist"></i> Tricycle Driver Applications - Admin View</h6><p style="font-size:11px;color:#6b7280">Admin will receive applications from tricycle drivers - Name, License, Plate No.</p><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Name</th><th>Username</th><th>License No.</th><th>Plate No.</th><th>Status</th><th>Action</th></tr></thead><tbody id="tricycleAppsTable"></tbody></table></div></div></div>
 <div id="page-boundary" class="page hidden"><div class="content-card"><h6><i class="bi bi-cash-stack"></i> Daily Boundary Remittance</h6><div class="row g-2 mb-3"><div class="col-md-4"><input id="bDriver" class="form-control" placeholder="Driver"></div><div class="col-md-3"><input id="bAmount" class="form-control" type="number" placeholder="Amount"></div><div class="col-md-3"><input id="bDate" class="form-control" type="date"></div><div class="col-md-2"><select id="bStatus" class="form-select"><option>Paid</option><option>Unpaid</option><option>Partial</option></select></div></div><button id="addBoundary" class="btn btn-dark">Record Boundary</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody id="boundaryTable"></tbody></table></div></div></div>
 <div id="page-income" class="page hidden"><div class="content-card"><h6><i class="bi bi-graph-up"></i> Income Reports</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th></tr></thead><tbody id="incomeTable"></tbody></table></div></div></div>
-<div id="page-users" class="page hidden"><div class="content-card"><h6><i class="bi bi-person-gear"></i> User Management</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Status</th></tr></thead><tbody id="userTable"></tbody></table></div></div></div>
+<div id="page-users" class="page hidden"><div class="content-card"><h6><i class="bi bi-person-gear"></i> User Management</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>License</th><th>Plate No.</th><th>Status</th></tr></thead><tbody id="userTable"></tbody></table></div></div></div>
 </div>
 </div>
 <script>
-let queue=[],attendance=[],trips=[],boundaries=[],users=[];
+let queue=[],attendance=[],trips=[],boundaries=[],users=[],tricycles=[];
 let currentUser=null;
 const $=id=>document.getElementById(id);
 const loginWrapper=$('loginWrapper'),registerWrapper=$('registerWrapper'),dash=$('dashboard');
-// ADMIN ACCOUNTS - EDIT HERE - PWEDE MO PALITAN - TODA QC LANG
+
 const ADMIN_ACCOUNTS = [
-  { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
+  { username: 'admin', password: 'smoker123', name: 'Head Admin', role: 'admin', status: 'Active' },
   { username: 'adminmark', password: 'admin123', name: 'Mark Anthony Naguit - AdminMark', role: 'admin', status: 'Active' },
-  { username: 'secretadmin', password: 'toda2024', name: 'Secret Admin', role: 'admin', status: 'Active' }
+  { username: 'secretarybea', password: 'bea2024', name: 'Secretary Bea', role: 'admin', status: 'Active' }
 ];
 function saveSession(user){
   sessionStorage.setItem('toda_session', JSON.stringify(user));
@@ -153,7 +158,7 @@ window.addEventListener('DOMContentLoaded', async()=>{
     $('userInfo').textContent=`${saved.role} | ${saved.name} | ${saved.username} | ${saved.status}`;
     loginWrapper.classList.add('hidden');registerWrapper.classList.add('hidden');dash.classList.remove('hidden');
     applyRoleVisibility(saved.role);
-    await Promise.all([loadUsers(), loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
+    await Promise.all([loadUsers(), loadQueue(), loadAttendance(), loadTrips(), loadBoundary(), loadTricycles()]);
     autoFillDriverFields();
     if(saved.role==='driver'||saved.role==='admin'){ autoJoinQueue(); }
     renderAll();
@@ -196,6 +201,51 @@ function autoJoinQueue(){
     if(el) el.innerHTML=`<div class="alert alert-info p-2" style="font-size:11px"><i class="bi bi-info-circle"></i> You are in queue - Position #${pos}</div>`;
   }
 }
+let myTricycle = null;
+async function saveTricycles(){
+  localStorage.setItem('toda_tricycles', JSON.stringify(tricycles));
+  try{ await fetch('/api/tricycles',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tricycles})}); }catch(e){}
+}
+async function loadTricycles(){
+  function sanitizeTri(arr){
+    if(!Array.isArray(arr)) return [];
+    return arr.filter(t=> t && (t.name || t.username) && (t.license || t.plate));
+  }
+  try{
+    const r=await fetch('/api/tricycles');
+    const d=await r.json();
+    if(d.success && d.tricycles){ tricycles=sanitizeTri(d.tricycles); }
+    else if(d.success && d.data){ tricycles=sanitizeTri(d.data); }
+  }catch(e){
+    const local = localStorage.getItem('toda_tricycles');
+    if(local){ try{ tricycles=JSON.parse(local); }catch(e){} }
+  }
+  const local2 = localStorage.getItem('toda_tricycles');
+  if(local2 && tricycles.length===0){ try{ tricycles=JSON.parse(local2); }catch(e){} }
+  tricycles = tricycles.filter(t=> t && t.name && t.license && t.plate);
+}
+function renderTricycleApps(){
+  const tbody = $('tricycleAppsTable');
+  if(!tbody) return;
+  if(tricycles.length===0){
+    tbody.innerHTML='<tr><td colspan="6" class="text-center text-muted">No tricycle applications yet. Drivers will appear here when they register with License and Plate No.</td></tr>';
+    return;
+  }
+  tbody.innerHTML=tricycles.map(t=>`<tr><td>${t.name||''}</td><td>${t.username||''}</td><td>${t.license||''}</td><td>${t.plate||''}</td><td><span class="badge-status ${t.status==='Approved'?'bg-active':t.status==='Pending'?'bg-pending':'bg-inactive'}">${t.status||'Pending'}</span></td><td><div class="d-flex gap-1"><button class="btn btn-sm btn-dark" style="font-size:10px" onclick="approveTricycle('${t.username}')">Approve</button><button class="btn btn-sm btn-light" style="font-size:10px" onclick="rejectTricycle('${t.username}')">Reject</button><button class="btn btn-sm btn-light" style="font-size:10px" onclick="deleteTricycle('${t.username}')"><i class="bi bi-x-lg"></i></button></div></td></tr>`).join('');
+}
+function approveTricycle(username){
+  tricycles = tricycles.map(t=> t.username===username ? {...t, status:'Approved'} : t);
+  saveTricycles(); renderAll();
+}
+function rejectTricycle(username){
+  tricycles = tricycles.map(t=> t.username===username ? {...t, status:'Rejected'} : t);
+  saveTricycles(); renderAll();
+}
+function deleteTricycle(username){
+  if(!confirm('Delete this tricycle application?')) return;
+  tricycles = tricycles.filter(t=> t.username!==username);
+  saveTricycles(); renderAll();
+}
 async function saveQueue(){
   try{ await fetch('/api/queue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }catch(e){ localStorage.setItem('toda_queue', JSON.stringify(queue)); }
   localStorage.setItem('toda_queue', JSON.stringify(queue));
@@ -228,15 +278,15 @@ async function loadQueue(){
   const local = localStorage.getItem('toda_queue');
   let localQ = [];
   if(local){ try{ localQ=sanitizeQueue(JSON.parse(local)); }catch(e){} }
-  // Use backend if has valid data, else local
+
   if(backendQ.length>0){
     queue = backendQ;
   }else{
     queue = localQ;
   }
-  // If still has undefined, force clean
+
   queue = sanitizeQueue(queue);
-  // Save cleaned version
+  
   localStorage.setItem('toda_queue', JSON.stringify(queue));
   try{ await fetch('/api/queue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }catch(e){}
 }
@@ -326,7 +376,18 @@ document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
   };
 });
 if($('dateNow')) $('dateNow').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+function sanitizeAttendance(arr){
+  if(!Array.isArray(arr)) return [];
+  return arr.filter(a=> a && a.driver && a.date && a.status && a.time).map(a=>({id:a.id||Date.now()+Math.random(), date:a.date, driver:a.driver, status:a.status, time:a.time, username:a.username||'', createdBy:a.createdBy||''}));
+}
+function sanitizeTrips(arr){
+  if(!Array.isArray(arr)) return [];
+  return arr.filter(t=> t && t.driver && t.date).map(t=>({id:t.id||Date.now()+Math.random(), date:t.date, driver:t.driver, destination:t.destination||'', passenger:t.passenger||'', fare:t.fare||'', username:t.username||''}));
+}
 function renderAll(){
+ 
+  attendance = sanitizeAttendance(attendance);
+  trips = sanitizeTrips(trips);
   if($('statTotal')) $('statTotal').textContent=users.filter(u=>u.role==='driver').length;
   if($('statQueue')) $('statQueue').textContent=queue.length;
   if($('statUsers')) $('statUsers').textContent=users.length;
@@ -337,7 +398,7 @@ function renderAll(){
   const uname=q.username||'';
   const isOwn = currentUser && uname===currentUser.username;
   const isAdmin = currentUser && currentUser.role==='admin';
-  // Bawal mag X ng iba - Join/Leave lang - X only own or admin
+ 
   const canDelete = isOwn || isAdmin;
   const xBtn = canDelete ? `<button class="btn btn-sm btn-light" style="padding:2px 6px" onclick="deleteQueueByUsername('${uname}')"><i class="bi bi-x-lg"></i></button>` : '';
   return `<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${isOwn?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${name} ${isOwn?'(You - Auto Joined)':''}</span><div class="d-flex gap-1 align-items-center"><span class="badge-status bg-queuing">${time||'Queuing'}</span>${xBtn}</div></div>`; 
@@ -347,7 +408,18 @@ function renderAll(){
   if($('tripTable')) $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteTrip(${t.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
   if($('boundaryTable')) $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteBoundary(${b.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
   if($('incomeTable')) $('incomeTable').innerHTML=boundaries.length?boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td>${b.status}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted">No records yet.</td></tr>';
-  if($('userTable')) $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td></tr>`).join('');
+  if($('userTable')) $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td>${u.license||'-'}</td><td>${u.plate||'-'}</td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td></tr>`).join('');
+  
+  if($('myTricycleInfo')){
+    const mine = tricycles.find(t=> t.username===currentUser?.username) || users.find(u=> u.username===currentUser?.username && u.license);
+    if(mine){
+      $('myTricycleInfo').innerHTML=`<div><b>Name:</b> ${mine.name||currentUser.name}<br><b>License:</b> ${mine.license||'-'}<br><b>Plate No:</b> ${mine.plate||'-'}<br><b>Status:</b> <span class="badge-status ${mine.status==='Approved'?'bg-active':'bg-pending'}">${mine.status||'Pending'}</span></div>`;
+      if($('tName')) $('tName').value=mine.name||'';
+      if($('tLicense')) $('tLicense').value=mine.license||'';
+      if($('tPlate')) $('tPlate').value=mine.plate||'';
+    }
+  }
+  renderTricycleApps();
 }
 if($('joinQueueBtn')) $('joinQueueBtn').onclick=()=>{
   if(!currentUser){ alert('Please login first'); return; }
@@ -380,13 +452,13 @@ function deleteAttendance(id){
   if(!confirm('Delete this attendance record?')) return;
   attendance = attendance.filter(a=> a.id!==id && a.id!==id.toString());
   if(attendance.length===0 || id===0){
-    // Fallback delete by index if id 0
+   
     attendance = attendance.filter((a,i)=> a.id!==0);
   }
   saveAttendance(); renderAll();
 }
 function deleteQueueByUsername(username){
-  // Bawal mag exis ng iba - check if own or admin
+ 
   if(currentUser && currentUser.username!==username && currentUser.role!=='admin'){
     alert('Bawal mag remove ng ibang driver - Join/Leave lang pwede - Hindi pwede mag exis ng kaparehas na driver');
     return;
@@ -413,13 +485,15 @@ if($('addTrip')) $('addTrip').onclick=()=>{
   saveTrips(); $('trDestination').value='';$('trPassenger').value='';$('trFare').value=''; renderAll();
 };
 if($('addBoundary')) $('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({id: Date.now(), date,driver,amount:parseInt(amount),status,username:currentUser?currentUser.username:''}); saveBoundary(); $('bDriver').value='';$('bAmount').value='';renderAll();};
-// Enter key support - FIXED - LOG IN LANG
+
 function handleLoginEnter(e){ if(e.key==='Enter'){ $('loginBtn').click(); } }
 if($('username')) $('username').addEventListener('keydown', handleLoginEnter);
 if($('password')) $('password').addEventListener('keydown', handleLoginEnter);
 if($('regUsername')) $('regUsername').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
 if($('regPassword')) $('regPassword').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
-// Login - FIXED - MAG REREKTA SA DASHBOARD
+if($('regLicense')) $('regLicense').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
+if($('regPlate')) $('regPlate').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
+
 if($('loginBtn')) $('loginBtn').onclick=async()=>{
   const username=$('username').value.trim(),password=$('password').value.trim();
   if(!username||!password){$('msg').textContent='Please enter username and password';return;}
@@ -436,7 +510,7 @@ if($('loginBtn')) $('loginBtn').onclick=async()=>{
       saveSession(currentUser);
       loginWrapper.classList.add('hidden');registerWrapper.classList.add('hidden');dash.classList.remove('hidden');
       applyRoleVisibility(d.user.role);
-      await Promise.all([loadUsers(), loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
+      await Promise.all([loadUsers(), loadQueue(), loadAttendance(), loadTrips(), loadBoundary(), loadTricycles()]);
       autoFillDriverFields();
       if(d.user.role==='driver' || d.user.role==='admin'){ autoJoinQueue(); }
       renderAll();
@@ -445,7 +519,7 @@ if($('loginBtn')) $('loginBtn').onclick=async()=>{
       $('msg').textContent=d.message;
     }
   }catch(e){
-    // Offline fallback - check ADMIN_ACCOUNTS array - TODA QC LANG
+    
     const adminFound = ADMIN_ACCOUNTS.find(a=> a.username===username && a.password===password);
     if(adminFound){
       currentUser=adminFound;
@@ -453,7 +527,7 @@ if($('loginBtn')) $('loginBtn').onclick=async()=>{
       saveSession(currentUser);
       loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
       applyRoleVisibility('admin');
-      await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary(), loadUsers()]);
+      await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary(), loadUsers(), loadTricycles()]);
       renderAll();
       $('msg').textContent='';
       return;
@@ -465,7 +539,7 @@ if($('loginBtn')) $('loginBtn').onclick=async()=>{
       saveSession(currentUser);
       loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
       applyRoleVisibility(found.role);
-      await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
+      await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary(), loadTricycles()]);
       autoFillDriverFields();
       if(found.role==='driver'){ autoJoinQueue(); }
       renderAll();
@@ -476,30 +550,54 @@ if($('loginBtn')) $('loginBtn').onclick=async()=>{
   }
 };
 if($('registerBtn')) $('registerBtn').onclick=async()=>{
-  const name=$('regName').value.trim(),username=$('regUsername').value.trim(),password=$('regPassword').value.trim(),role=$('regRole').value;
-  if(!name||!username||!password){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Please fill all fields';return;}
+  const name=$('regName').value.trim(),username=$('regUsername').value.trim(),password=$('regPassword').value.trim(),license=$('regLicense')?$('regLicense').value.trim():'',plate=$('regPlate')?$('regPlate').value.trim():'',role=$('regRole').value;
+  if(!name||!username||!password||!license||!plate){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Please fill all fields - Name, License, Plate No. required';return;}
   if(username.length<3){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Username must be at least 3 characters';return;}
   if(password.length<6){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Password must be at least 6 characters';return;}
   $('regMsg').style.color='#6b7280';$('regMsg').textContent='Creating account...';
   try{
-    const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,username,password,role})});
+    const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,username,password,role,license,plate,status:'Pending'})});
     const d=await r.json();
     if(d.success){
-      $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created - You can now login: '+d.user.username;
-      $('regName').value='';$('regUsername').value='';$('regPassword').value='';
-      setTimeout(()=>{$('showLogin').click();$('username').value=d.user.username;},1200);
+      // Also save to tricycles
+      tricycles.push({name,username,license,plate,status:'Pending'});
+      saveTricycles();
+      $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created - Tricycle application sent to admin: '+d.user.username;
+      $('regName').value='';$('regUsername').value='';$('regPassword').value='';if($('regLicense'))$('regLicense').value='';if($('regPlate'))$('regPlate').value='';
+      setTimeout(()=>{$('showLogin').click();$('username').value=d.user.username;},1500);
     }else{$('regMsg').style.color='#dc2626';$('regMsg').textContent=d.message;}
   }catch(e){
     if(users.find(u=>u.username===username)){ $('regMsg').style.color='#dc2626';$('regMsg').textContent='Username already exists'; return; }
-    users.push({username,name,role,password,status:'Active'});
+    const newUser = {username,name,role,password,license,plate,status:'Pending'};
+    users.push(newUser);
+    tricycles.push({name,username,license,plate,status:'Pending'});
     localStorage.setItem('toda_users_backup', JSON.stringify(users));
-    $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created (local) - You can now login: '+username;
-    $('regName').value='';$('regUsername').value='';$('regPassword').value='';
-    setTimeout(()=>{$('showLogin').click();$('username').value=username;},1200);
+    localStorage.setItem('toda_tricycles', JSON.stringify(tricycles));
+    $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created (local) - Application sent to admin: '+username;
+    $('regName').value='';$('regUsername').value='';$('regPassword').value='';if($('regLicense'))$('regLicense').value='';if($('regPlate'))$('regPlate').value='';
+    setTimeout(()=>{$('showLogin').click();$('username').value=username;},1500);
   }
 };
+
+if($('saveTricycle')) $('saveTricycle').onclick=()=>{
+  if(!currentUser){ alert('Please login first'); return; }
+  const name=$('tName').value.trim()||currentUser.name, license=$('tLicense').value.trim(), plate=$('tPlate').value.trim();
+  if(!name||!license||!plate){ alert('Please fill Name, License, Plate No.'); return; }
+  const existingIdx = tricycles.findIndex(t=> t.username===currentUser.username);
+  if(existingIdx>=0){
+    tricycles[existingIdx]={...tricycles[existingIdx], name, license, plate, username:currentUser.username, status:tricycles[existingIdx].status||'Pending'};
+  }else{
+    tricycles.push({name, username:currentUser.username, license, plate, status:'Pending'});
+  }
+  
+  const uIdx = users.findIndex(u=> u.username===currentUser.username);
+  if(uIdx>=0){ users[uIdx].license=license; users[uIdx].plate=plate; users[uIdx].name=name; localStorage.setItem('toda_users_backup', JSON.stringify(users)); }
+  saveTricycles();
+  alert('Tricycle info saved - Application sent to admin');
+  renderAll();
+};
 if('serviceWorker' in navigator){
-  // Unregister old SW to clear cache
+  
   navigator.serviceWorker.getRegistrations().then(regs=>{ regs.forEach(r=>r.unregister()); });
 }
 renderAll();

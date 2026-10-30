@@ -23,9 +23,9 @@ function writeJson(filePath, data){
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
-// ADMIN ACCOUNTS - EDIT HERE - PWEDE MO PALITAN PASSWORD - SECRET ADMIN - IKAW LANG NAKAKAALAM
+
 const ADMIN_ACCOUNTS = [
-  { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
+  { username: 'adminmark', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
   { username: 'secretadmin', password: 'toda2024', name: 'Secret Admin', role: 'admin', status: 'Active' }
 ];
 const ADMIN_ACCOUNT = ADMIN_ACCOUNTS[0]; // Main admin
@@ -101,7 +101,7 @@ app.post('/api/trips', (req,res)=>{ writeJson(tripsFile, req.body.trips||[]); re
 app.get('/api/boundary', (req,res)=>{ res.json({ success: true, boundaries: readJson(boundaryFile, []) }); });
 app.post('/api/boundary', (req,res)=>{ writeJson(boundaryFile, req.body.boundaries||[]); res.json({ success: true }); });
 
-// Robust static file handling - try multiple locations
+
 const possibleIndexPaths = [
   path.join(__dirname, 'index.html'),
   path.join(__dirname, 'frontend', 'index.html'),
@@ -126,7 +126,7 @@ app.get('/', (req,res)=>{
   }
 });
 
-// Catch-all for SPA - must be last
+
 app.get('*', (req,res)=>{
   if(req.path.startsWith('/api/')) return res.status(404).json({ success: false, message: 'API not found' });
   const indexPath = findIndexHtml();

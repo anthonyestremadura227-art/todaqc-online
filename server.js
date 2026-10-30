@@ -9,9 +9,9 @@ const PORT = process.env.PORT || 10000;
 
 
 const ADMIN_ACCOUNTS = [
-  { username: 'admin', password: 'smoker123', name: 'Admin Head', role: 'admin', status: 'Active' },
+  { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
   { username: 'adminmark', password: 'admin123', name: 'Mark Anthony Naguit - AdminMark', role: 'admin', status: 'Active' },
-  { username: 'secretarybea', password: 'Bea2024', name: 'Secretary Bea', role: 'admin', status: 'Active' }
+  { username: 'secretadmin', password: 'toda2024', name: 'Secret Admin', role: 'admin', status: 'Active' }
 ];
 const ADMIN_ACCOUNT = ADMIN_ACCOUNTS[0];
 
@@ -39,6 +39,7 @@ function findIndexHtml(){
 
 const DATA_DIR = __dirname;
 const FILES = {
+  tricycles: path.join(DATA_DIR, 'tricycles.json'),
   users: path.join(DATA_DIR, 'users.json'),
   queue: path.join(DATA_DIR, 'queue.json'),
   attendance: path.join(DATA_DIR, 'attendance.json'),
@@ -73,7 +74,7 @@ if(!fs.existsSync(FILES.queue)) writeJSON(FILES.queue, []);
 if(!fs.existsSync(FILES.attendance)) writeJSON(FILES.attendance, []);
 if(!fs.existsSync(FILES.trips)) writeJSON(FILES.trips, []);
 if(!fs.existsSync(FILES.boundary)) writeJSON(FILES.boundary, []);
-
+if(!fs.existsSync(FILES.tricycles)) writeJSON(FILES.tricycles, []);
 
 app.post('/api/login', (req,res)=>{
   try{
@@ -82,14 +83,14 @@ app.post('/api/login', (req,res)=>{
     const p = (password||'').trim();
     console.log(`Login attempt: ${u}`);
     
-   
+    
     const adminFound = ADMIN_ACCOUNTS.find(a=> a.username===u && a.password===p);
     if(adminFound){
       console.log(`Success: ${u} - Admin`);
       return res.json({ success: true, user: adminFound });
     }
     
-   
+    
     let users = readJSON(FILES.users, []);
     
     const allUsers = [...ADMIN_ACCOUNTS, ...users];
@@ -130,7 +131,7 @@ app.post('/api/login', (req,res)=>{
 app.get('/api/users', (req,res)=>{
   try{
     let users = readJSON(FILES.users, []);
-    // Always include ADMIN_ACCOUNTS
+    
     const map = {};
     [...ADMIN_ACCOUNTS, ...users].forEach(u=>{ if(u.username) map[u.username]=u; });
     const merged = Object.values(map);
@@ -142,16 +143,20 @@ app.get('/api/users', (req,res)=>{
 
 app.post('/api/register', (req,res)=>{
   try{
-    const { username, password, name, role } = req.body;
+    const { username, password, name, role, license, plate } = req.body;
     const u = (username||'').trim();
     if(!u || !password) return res.json({ success: false, message: 'Username and password required' });
     let users = readJSON(FILES.users, []);
     if(users.find(x=>x.username===u) || ADMIN_ACCOUNTS.find(a=>a.username===u)){
       return res.json({ success: false, message: 'Username already exists' });
     }
-    const newUser = { username: u, password: password, name: name||u, role: role||'driver', status: 'Active', createdAt: new Date().toISOString() };
+    const newUser = { username: u, password: password, name: name||u, role: role||'driver', license: license||'', plate: plate||'', status: 'Pending', createdAt: new Date().toISOString() };
     users.push(newUser);
     writeJSON(FILES.users, users);
+    
+    let tricycles = readJSON(FILES.tricycles, []);
+    tricycles.push({ name: name||u, username: u, license: license||'', plate: plate||'', status: 'Pending', createdAt: new Date().toISOString() });
+    writeJSON(FILES.tricycles, tricycles);
     res.json({ success: true, user: newUser });
   }catch(e){
     res.json({ success: false, message: 'Server error' });

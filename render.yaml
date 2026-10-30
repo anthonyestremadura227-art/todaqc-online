@@ -1,9 +1,7 @@
 services:
-  - type: web
+    - type: web
     name: todaqc-online
     env: node
-    region: singapore
     plan: free
     buildCommand: npm install
-    startCommand: npm start
-    healthCheckPath: /api/health
+    startCommand: node server.js

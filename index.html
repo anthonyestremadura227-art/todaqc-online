@@ -30,10 +30,13 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 .bg-pending{background:#fef9c3;color:#854d0e}
 .bg-active{background:#dcfce7;color:#166534}
 .bg-inactive{background:#fee2e2;color:#991b1b}
+.bg-queuing{background:#dbeafe;color:#1e40af}
 .table{font-size:12px}
 .table th{font-size:10px;text-transform:uppercase;color:#6b7280;background:#f8fafc}
 .form-control,.form-select{font-size:12px;padding:10px 12px;border-radius:10px}
 .btn{font-size:12px;padding:10px 16px;border-radius:10px;font-weight:600}
+.queue-card{border:2px solid #2563eb;background:#eff6ff}
+.my-queue{border-left:4px solid #16a34a;background:#f0fdf4}
 @media(max-width:900px){.sidebar{width:100%;height:auto;position:relative}.main-content{margin-left:0}.dashboard{flex-direction:column}}
 </style>
 </head>
@@ -42,7 +45,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div class="login-card">
 <div class="text-center mb-3"><span style="font-size:44px">🛺</span></div>
 <h5 class="text-center fw-bold">TODA Queue Management<br>& Daily Boundary Remittance System</h5>
-<p class="text-center text-muted" style="font-size:10px">Project 8 TODA, Quezon City</p>
+<p class="text-center text-muted" style="font-size:10px">Project 8 TODA, Quezon City<br>Web-Based Platform - Thesis Project</p>
 <div class="mt-3">
 <input id="username" class="form-control mb-2" type="text" placeholder="Username" autocomplete="off">
 <input id="password" class="form-control mb-3" type="password" placeholder="Password">
@@ -50,7 +53,6 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div class="text-center mt-3"><a href="#" id="showRegister" style="font-size:11px;text-decoration:none">Don't have an account? Create account</a></div>
 <div id="msg" class="text-center mt-2" style="font-size:11px;color:#dc2626;min-height:16px"></div>
 </div>
-<div class="text-center mt-4" style="font-size:9px;color:#9ca3af">todaqc.online</div>
 </div>
 </div>
 <div id="registerWrapper" class="login-wrapper hidden">
@@ -60,10 +62,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <input id="regName" class="form-control mb-2" type="text" placeholder="Full Name">
 <input id="regUsername" class="form-control mb-2" type="text" placeholder="Username">
 <input id="regPassword" class="form-control mb-2" type="password" placeholder="Password">
-<select id="regRole" class="form-select mb-3">
-<option value="driver">Driver</option>
-<option value="passenger">Passenger</option>
-</select>
+<select id="regRole" class="form-select mb-3"><option value="driver">Driver</option><option value="passenger">Passenger</option></select>
 <button id="registerBtn" class="btn btn-dark w-100">Create Account</button>
 <div class="text-center mt-3"><a href="#" id="showLogin" style="font-size:11px;text-decoration:none">Already have an account? Login</a></div>
 <div id="regMsg" class="text-center mt-2" style="font-size:11px;min-height:16px"></div>
@@ -86,23 +85,68 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 </div>
 <div class="main-content">
 <div class="topbar"><div><div class="fw-bold" style="font-size:15px" id="pageTitle">Overview Dashboard</div><div style="font-size:11px;color:#6b7280">Web-Based TODA Queue Management and Daily Boundary Remittance System</div></div><div style="font-size:10px;color:#6b7280" id="dateNow"></div></div>
-<div id="page-overview" class="page"><div class="row g-3 mb-3"><div class="col-md-3"><div class="stat-card"><div class="stat-label">Total Drivers</div><div class="stat-value" id="statTotal">0</div></div></div><div class="col-md-3"><div class="stat-card"><div class="stat-label">Available</div><div class="stat-value" id="statAvail">0</div></div></div><div class="col-md-3"><div class="stat-card"><div class="stat-label">On Trip</div><div class="stat-value" id="statTrip">0</div></div></div><div class="col-md-3"><div class="stat-card"><div class="stat-label">Today Collection</div><div class="stat-value" style="font-size:20px">₱0</div></div></div></div><div class="row g-3"><div class="col-md-6"><div class="content-card"><h6><i class="bi bi-list-ol"></i> Current Queue - Live</h6><div id="overviewQueue"><small class="text-muted">No queue yet. Register drivers to populate.</small></div></div></div><div class="col-md-6"><div class="content-card"><h6><i class="bi bi-cash-stack"></i> Boundary - Today</h6><div id="overviewBoundary"><small class="text-muted">No records yet.</small></div></div></div></div></div>
-<div id="page-drivers" class="page hidden"><div class="content-card"><h6><i class="bi bi-person-plus"></i> Driver Registration</h6><div class="row g-2 mb-3"><div class="col-md-6"><input id="dName" class="form-control" placeholder="Full Name"></div><div class="col-md-6"><input id="dLicense" class="form-control" placeholder="License No"></div><div class="col-md-6"><input id="dContact" class="form-control" placeholder="Contact"></div><div class="col-md-6"><></div></div><button id="addDriver" class="btn btn-dark">Register Driver</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Name</th><th>License</th><th>Contact</th><th>Status</th></tr></thead><tbody id="driverTable"></tbody></table></div></div></div>
-<div id="page-queue" class="page hidden"><div class="row g-3"><div class="col-md-6"><div class="content-card"><h6><i class="bi bi-list-ol"></i> Digital Queue</h6><div id="queueList"></div><div class="d-flex gap-2 mt-3"><button id="nextQ" class="btn btn-dark flex-fill">Next</button><button id="clearQ" class="btn btn-light flex-fill">Clear Queue</button></div></div></div><div class="col-md-6"><div class="content-card"><h6><i class="bi bi-eye"></i> Queue Monitoring</h6><div id="queueMonitor"></div><button id="addQueue" class="btn btn-outline-dark w-100 mt-3">Add to Queue</button></div></div></div></div>
-<div id="page-attendance" class="page hidden"><div class="content-card"><h6><i class="bi bi-calendar-check"></i> Attendance</h6><div class="row g-2 mb-3"><div class="col-md-8"><input id="aDriver" class="form-control" placeholder="Driver Name"></div><div class="col-md-4"><select id="aStatus" class="form-select"><option>Present</option><option>Absent</option></select></div></div><button id="addAttendance" class="btn btn-dark">Record Attendance</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Status</th><th>Time</th></tr></thead><tbody id="attendanceTable"></tbody></table></div></div></div>
-<div id="page-trips" class="page hidden"><div class="content-card"><h6><i class="bi bi-signpost-split"></i> Trip History</h6><div class="row g-2 mb-3"><div class="col-md-6"><input id="trDriver" class="form-control" placeholder="Driver"></div><div class="col-md-6"><input id="trDestination" class="form-control" placeholder="Destination"></div><div class="col-md-6"><input id="trPassenger" class="form-control" placeholder="Passenger"></div><div class="col-md-6"><input id="trFare" class="form-control" type="number" placeholder="Fare"></div></div><button id="addTrip" class="btn btn-dark">Record Trip</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Destination</th><th>Passenger</th><th>Fare</th></tr></thead><tbody id="tripTable"></tbody></table></div></div></div>
+<div id="page-overview" class="page">
+<div class="row g-3 mb-3">
+<div class="col-md-4"><div class="stat-card"><div class="stat-label">Total Drivers</div><div class="stat-value" id="statTotal">0</div><div class="stat-label">Registered</div></div></div>
+<div class="col-md-4"><div class="stat-card"><div class="stat-label">In Queue</div><div class="stat-value" id="statQueue">0</div><div class="stat-label">Waiting</div></div></div>
+<div class="col-md-4"><div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-value" id="statUsers">0</div><div class="stat-label">Active</div></div></div>
+</div>
+<div class="content-card"><h6><i class="bi bi-list-ol"></i> Current Queue - Live</h6><div id="overviewQueue"><small class="text-muted">No queue yet. Drivers will automatically join when they login.</small></div></div>
+</div>
+<div id="page-queue" class="page hidden">
+<div class="row g-3">
+<div class="col-md-7"><div class="content-card"><h6><i class="bi bi-list-ol"></i> Digital Queue - Pila</h6><div id="myQueueStatus" class="mb-2"></div><div id="queueList"></div><div class="d-flex gap-2 mt-3"><button id="joinQueueBtn" class="btn btn-dark flex-fill"><i class="bi bi-plus-lg"></i> Join Queue</button><button id="leaveQueueBtn" class="btn btn-light flex-fill">Leave Queue</button></div><div class="d-flex gap-2 mt-2 admin-only-menu"><button id="nextQ" class="btn btn-dark flex-fill">Next</button><button id="clearQ" class="btn btn-light flex-fill">Clear Queue</button></div></div></div>
+<div class="col-md-5"><div class="content-card"><h6><i class="bi bi-eye"></i> Queue Monitoring</h6><div id="queueMonitor"></div></div></div>
+</div>
+</div>
+<div id="page-attendance" class="page hidden"><div class="content-card"><h6><i class="bi bi-calendar-check"></i> Attendance</h6><div class="row g-2 mb-3"><div class="col-md-8"><input id="aDriver" class="form-control" placeholder="Driver Name - Auto-filled"></div><div class="col-md-4"><select id="aStatus" class="form-select"><option>Present</option><option>Absent</option></select></div></div><button id="addAttendance" class="btn btn-dark">Record Attendance</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Status</th><th>Time</th></tr></thead><tbody id="attendanceTable"></tbody></table></div></div></div>
+<div id="page-trips" class="page hidden"><div class="content-card"><h6><i class="bi bi-signpost-split"></i> Trip History</h6><div class="row g-2 mb-3"><div class="col-md-6"><input id="trDriver" class="form-control" placeholder="Driver - Auto-filled"></div><div class="col-md-6"><input id="trDestination" class="form-control" placeholder="Destination"></div><div class="col-md-6"><input id="trPassenger" class="form-control" placeholder="Passenger"></div><div class="col-md-6"><input id="trFare" class="form-control" type="number" placeholder="Fare"></div></div><button id="addTrip" class="btn btn-dark">Record Trip</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Destination</th><th>Passenger</th><th>Fare</th></tr></thead><tbody id="tripTable"></tbody></table></div></div></div>
 <div id="page-boundary" class="page hidden"><div class="content-card"><h6><i class="bi bi-cash-stack"></i> Daily Boundary Remittance</h6><div class="row g-2 mb-3"><div class="col-md-4"><input id="bDriver" class="form-control" placeholder="Driver"></div><div class="col-md-3"><input id="bAmount" class="form-control" type="number" placeholder="Amount"></div><div class="col-md-3"><input id="bDate" class="form-control" type="date"></div><div class="col-md-2"><select id="bStatus" class="form-select"><option>Paid</option><option>Unpaid</option><option>Partial</option></select></div></div><button id="addBoundary" class="btn btn-dark">Record Boundary</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th></tr></thead><tbody id="boundaryTable"></tbody></table></div></div></div>
-<div id="page-income" class="page hidden"><div class="content-card"><h6><i class="bi bi-graph-up"></i> Income Reports</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Date</th><th>Total Drivers</th><th>Paid</th><th>Unpaid</th><th>Total Collection</th></tr></thead><tbody id="incomeTable"></tbody></table></div></div></div>
+<div id="page-income" class="page hidden"><div class="content-card"><h6><i class="bi bi-graph-up"></i> Income Reports</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th></tr></thead><tbody id="incomeTable"></tbody></table></div></div></div>
 <div id="page-users" class="page hidden"><div class="content-card"><h6><i class="bi bi-person-gear"></i> User Management</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Status</th></tr></thead><tbody id="userTable"></tbody></table></div></div></div>
 </div>
 </div>
 <script>
-let drivers=[],tricycles=[],queue=[],attendance=[],trips=[],boundaries=[],users=[];
+let queue=[],attendance=[],trips=[],boundaries=[],users=[];
 let currentUser=null;
 const $=id=>document.getElementById(id);
 const loginWrapper=$('loginWrapper'),registerWrapper=$('registerWrapper'),dash=$('dashboard');
+function saveSession(user){
+  localStorage.setItem('toda_session', JSON.stringify(user));
+  localStorage.setItem('toda_session_time', Date.now().toString());
+}
+function loadSession(){
+  try{
+    const s = localStorage.getItem('toda_session');
+    const t = localStorage.getItem('toda_session_time');
+    if(!s) return null;
+    // Session valid for 24 hours
+    if(t && (Date.now() - parseInt(t)) > 24*60*60*1000){
+      clearSession();
+      return null;
+    }
+    return JSON.parse(s);
+  }catch(e){ return null; }
+}
+function clearSession(){
+  localStorage.removeItem('toda_session');
+  localStorage.removeItem('toda_session_time');
+}
 $('showRegister').onclick=(e)=>{e.preventDefault();loginWrapper.classList.add('hidden');dash.classList.add('hidden');registerWrapper.classList.remove('hidden');};
 $('showLogin').onclick=(e)=>{e.preventDefault();registerWrapper.classList.add('hidden');dash.classList.add('hidden');loginWrapper.classList.remove('hidden');$('username').value='';$('password').value='';$('msg').textContent='';$('regMsg').textContent='';};
+window.addEventListener('DOMContentLoaded', async()=>{
+  const saved = loadSession();
+  if(saved){
+    currentUser = saved;
+    $('userInfo').textContent=`${saved.role} | ${saved.name} | ${saved.username} | ${saved.status}`;
+    loginWrapper.classList.add('hidden');registerWrapper.classList.add('hidden');dash.classList.remove('hidden');
+    applyRoleVisibility(saved.role);
+    await Promise.all([loadUsers(), loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
+    autoFillDriverFields();
+    if(saved.role==='driver'){ autoJoinQueue(); }
+    renderAll();
+  }
+});
 function applyRoleVisibility(role){
   if(role!=='admin'){
     document.querySelectorAll('.admin-only-menu').forEach(el=>el.classList.add('hidden'));
@@ -114,6 +158,93 @@ function applyRoleVisibility(role){
   document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
   document.querySelector('[data-page="overview"]').classList.add('active');
   $('pageTitle').textContent='Overview Dashboard';
+}
+function autoFillDriverFields(){
+  if(!currentUser) return;
+  const name = currentUser.name || currentUser.username;
+  if($('aDriver')) $('aDriver').value = name;
+  if($('trDriver')) $('trDriver').value = name;
+  if($('bDriver')) $('bDriver').value = name;
+  if($('tDriver')) $('tDriver').value = name;
+}
+function autoJoinQueue(){
+  if(!currentUser) return;
+  if(currentUser.role!=='driver' && currentUser.role!=='admin') return;
+  const name = currentUser.name || currentUser.username;
+  const exists = queue.find(q=>q.username===currentUser.username || q.name===name);
+  if(!exists){
+    const newEntry = { name: name, username: currentUser.username, time: new Date().toLocaleTimeString(), joinedAt: Date.now() };
+    queue.push(newEntry);
+    saveQueue();
+    renderAll();
+    $('myQueueStatus').innerHTML=`<div class="alert alert-success p-2" style="font-size:11px"><i class="bi bi-check-circle"></i> You are now in queue - Position #${queue.length} - ${name}</div>`;
+  } else {
+    const pos = queue.findIndex(q=>q.username===currentUser.username || q.name===name)+1;
+    $('myQueueStatus').innerHTML=`<div class="alert alert-info p-2" style="font-size:11px"><i class="bi bi-info-circle"></i> You are in queue - Position #${pos}</div>`;
+  }
+}
+async function saveQueue(){
+  try{ await fetch('/api/queue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }catch(e){ localStorage.setItem('toda_queue', JSON.stringify(queue)); }
+}
+async function loadQueue(){
+  let backendQ = [];
+  try{
+    const r=await fetch('/api/queue');
+    const d=await r.json();
+    if(d.success){ backendQ=d.queue; }
+  }catch(e){}
+  const local = localStorage.getItem('toda_queue');
+  let localQ = [];
+  if(local){ try{ localQ=JSON.parse(local); }catch(e){} }
+  // Use backend if has data, else local
+  queue = backendQ.length ? backendQ : localQ;
+}
+async function saveAttendance(){
+  try{ await fetch('/api/attendance',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({attendance})}); }catch(e){ localStorage.setItem('toda_attendance', JSON.stringify(attendance)); }
+}
+async function loadAttendance(){
+  let backendAtt = [];
+  try{
+    const r=await fetch('/api/attendance');
+    const d=await r.json();
+    if(d.success){ backendAtt=d.attendance; }
+  }catch(e){}
+  const local = localStorage.getItem('toda_attendance');
+  let localAtt = [];
+  if(local){ try{ localAtt=JSON.parse(local); }catch(e){} }
+  // Merge - backend + local, dedupe by date+driver+time
+  const merged = [...backendAtt];
+  localAtt.forEach(la=>{
+    const exists = merged.find(ma=> ma.date===la.date && ma.driver===la.driver && ma.time===la.time);
+    if(!exists) merged.push(la);
+  });
+  attendance = merged;
+}
+async function saveTrips(){
+  try{ await fetch('/api/trips',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trips})}); }catch(e){ localStorage.setItem('toda_trips', JSON.stringify(trips)); }
+}
+async function loadTrips(){
+  try{
+    const r=await fetch('/api/trips');
+    const d=await r.json();
+    if(d.success){ trips=d.trips; }
+  }catch(e){
+    const local = localStorage.getItem('toda_trips');
+    if(local) trips=JSON.parse(local);
+  }
+}
+async function saveBoundary(){
+  try{ await fetch('/api/boundary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({boundaries})}); }catch(e){ localStorage.setItem('toda_boundary', JSON.stringify(boundaries)); }
+}
+async function loadBoundary(){
+  try{
+    const r=await fetch('/api/boundary');
+    const d=await r.json();
+    if(d.success){ boundaries=d.boundaries; }
+  }catch(e){
+    const local = localStorage.getItem('toda_boundary');
+    if(local) boundaries=JSON.parse(local);
+  }
 }
 $('loginBtn').onclick=async()=>{
   const username=$('username').value.trim(),password=$('password').value.trim();
@@ -129,9 +260,12 @@ $('loginBtn').onclick=async()=>{
         try{await fetch('/api/activate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});}catch(e){}
       }
       $('userInfo').textContent=`${d.user.role} | ${d.user.name} | ${d.user.username} | ${currentUser.status}`;
+      saveSession(currentUser);
       loginWrapper.classList.add('hidden');registerWrapper.classList.add('hidden');dash.classList.remove('hidden');
       applyRoleVisibility(d.user.role);
-      await loadUsers();
+      await Promise.all([loadUsers(), loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
+      autoFillDriverFields();
+      if(d.user.role==='driver'){ autoJoinQueue(); }
       renderAll();
       $('msg').textContent='';
     } else {
@@ -141,17 +275,22 @@ $('loginBtn').onclick=async()=>{
     if(username==='admin'&&password==='smoker123'){
       currentUser={username:'admin',role:'admin',name:'Mark Anthony Naguit',status:'Active'};
       $('userInfo').textContent=`admin | Mark Anthony Naguit | admin | Active`;
+      saveSession(currentUser);
       loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
       applyRoleVisibility('admin');
+      await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
       renderAll();
     } else {
-      // Fallback local check from users array
       const found=users.find(u=>u.username===username&&u.password===password);
       if(found){
         currentUser=found;currentUser.status='Active';
         $('userInfo').textContent=`${found.role} | ${found.name} | ${found.username} | Active`;
+        saveSession(currentUser);
         loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
         applyRoleVisibility(found.role);
+        await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
+        autoFillDriverFields();
+        if(found.role==='driver'){ autoJoinQueue(); }
         renderAll();
       } else {
         $('msg').textContent='Invalid username or password';
@@ -188,7 +327,7 @@ async function loadUsers(){
     if(d.success){ users=d.users; }
   }catch(e){}
 }
-$('logoutMenu').onclick=()=>{localStorage.clear();sessionStorage.clear();location.reload();};
+$('logoutMenu').onclick=()=>{clearSession(); localStorage.removeItem('toda_queue'); localStorage.removeItem('toda_attendance'); localStorage.removeItem('toda_trips'); localStorage.removeItem('toda_boundary'); sessionStorage.clear(); location.reload();};
 document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
   item.onclick=()=>{
     if(item.classList.contains('hidden')) return;
@@ -202,29 +341,48 @@ document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
 });
 $('dateNow').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 function renderAll(){
-  $('statTotal').textContent=drivers.length;
-  $('statAvail').textContent=drivers.filter(d=>d.status==='Available').length;
-  $('statTrip').textContent=drivers.filter(d=>d.status==='On Trip').length;
-  $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} - ${q.name}</span><span class="badge-status bg-available">${q.time}</span></div>`).join(''):'<small class="text-muted">No queue yet.</small>';
-  $('overviewBoundary').innerHTML=boundaries.length?boundaries.map(b=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">${b.driver} - ₱${b.amount}</span><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></div>`).join(''):'<small class="text-muted">No records yet.</small>';
-  $('driverTable').innerHTML=drivers.map(d=>`<tr><td>${d.name}</td><td>${d.license}</td><td>${d.contact}</td><td><span class="badge-status bg-available">${d.status}</span></td></tr>`).join('');
-  $('tricycleTable').innerHTML=tricycles.map(t=>`<tr><td>${t.number}</td><td>${t.plate}</td><td>${t.driver}</td><td><span class="badge-status bg-available">${t.status}</span></td></tr>`).join('');
-  $('queueList').innerHTML=queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} - ${q.name}</span><span class="badge-status bg-available">${q.time}</span></div>`).join('');
-  $('queueMonitor').innerHTML=drivers.map(d=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">${d.name}</span><span class="badge-status bg-available">${d.status}</span></div>`).join('');
-  $('attendanceTable').innerHTML=attendance.map(a=>`<tr><td>${a.date}</td><td>${a.driver}</td><td>${a.status}</td><td>${a.time}</td></tr>`).join('');
+  $('statTotal').textContent=users.filter(u=>u.role==='driver').length;
+  $('statQueue').textContent=queue.length;
+  $('statUsers').textContent=users.length;
+  $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You)':''}</span><span class="badge-status bg-queuing">${q.time}</span></div>`).join(''):'<small class="text-muted">No queue yet.</small>';
+  $('queueList').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You - Auto Joined)':''}</span><span class="badge-status bg-queuing">${q.time}</span></div>`).join(''):'<small class="text-muted">No queue. Click Join Queue or login as driver to auto-join.</small>';
+  $('queueMonitor').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} ${q.name}</span><span class="badge-status bg-queuing">Queuing</span></div>`).join(''):'<small class="text-muted">No drivers in queue.</small>';
+  $('attendanceTable').innerHTML=attendance.length?attendance.map(a=>`<tr><td>${a.date}</td><td>${a.driver} ${a.username?`(${a.username})`:''}</td><td><span class="badge-status ${a.status==='Present'?'bg-active':'bg-inactive'}">${a.status}</span></td><td>${a.time}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted">No attendance records yet. Attendance from all users will show here for admin.</td></tr>';
   $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td></tr>`).join('');
   $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td></tr>`).join('');
-  $('incomeTable').innerHTML=boundaries.length?boundaries.map(b=>`<tr><td>${b.date}</td><td>1</td><td>${b.status==='Paid'?1:0}</td><td>${b.status!=='Paid'?1:0}</td><td>₱${b.amount}</td></tr>`).join(''):'<tr><td colspan="5" class="text-center text-muted">No income records yet.</td></tr>';
+  $('incomeTable').innerHTML=boundaries.length?boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td>${b.status}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted">No records yet.</td></tr>';
   $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td></tr>`).join('');
 }
-$('addDriver').onclick=()=>{const name=$('dName').value.trim(),license=$('dLicense').value.trim(),contact=$('dContact').value.trim(),plate=$('dPlateNo.').value.trim();if(!name){alert('Please enter driver name');return;}drivers.push({name,license,contact,plate,status:'Available'});$('dName').value='';$('dLicense').value='';$('dContact').value='';$('dPlateNo.').value='';renderAll();};
-$('addTricycle').onclick=()=>{const number=$('tNumber').value.trim(),plate=$('tPlate').value.trim(),driver=$('tDriver').value.trim();if(!number){alert('Please enter TODA number');return;}tricycles.push({number,plate,driver,status:'Available'});$('tNumber').value='';$('tPlate').value='';$('tDriver').value='';$('tModel').value='';renderAll();};
-$('addQueue').onclick=()=>{const name=prompt('Driver Name:');if(!name)return;queue.push({name,area:'Project 8',time:new Date().toLocaleTimeString()});renderAll();};
-$('nextQ').onclick=()=>{if(queue.length){queue.shift();renderAll();}else alert('Queue is empty');};
-$('clearQ').onclick=()=>{queue=[];renderAll();};
-$('addAttendance').onclick=()=>{const driver=$('aDriver').value.trim(),status=$('aStatus').value;if(!driver){alert('Enter driver name');return;}attendance.push({date:new Date().toLocaleDateString(),driver,status,time:new Date().toLocaleTimeString()});$('aDriver').value='';renderAll();};
-$('addTrip').onclick=()=>{const driver=$('trDriver').value.trim(),destination=$('trDestination').value.trim(),passenger=$('trPassenger').value.trim(),fare=$('trFare').value.trim();if(!driver||!destination){alert('Fill driver and destination');return;}trips.push({date:new Date().toLocaleDateString(),driver,destination,passenger,fare:fare||50});$('trDriver').value='';$('trDestination').value='';$('trPassenger').value='';$('trFare').value='';renderAll();};
-$('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({date,driver,amount:parseInt(amount),status});$('bDriver').value='';$('bAmount').value='';renderAll();};
+$('joinQueueBtn').onclick=()=>{
+  if(!currentUser){ alert('Please login first'); return; }
+  const name=currentUser.name||currentUser.username;
+  if(queue.find(q=>q.username===currentUser.username)){ alert('You are already in queue'); return; }
+  queue.push({name:name, username:currentUser.username, time:new Date().toLocaleTimeString(), joinedAt: Date.now()});
+  saveQueue(); renderAll();
+};
+$('leaveQueueBtn').onclick=()=>{
+  if(!currentUser) return;
+  queue=queue.filter(q=>q.username!==currentUser.username);
+  saveQueue(); renderAll();
+  $('myQueueStatus').innerHTML=`<div class="alert alert-warning p-2" style="font-size:11px">You left the queue</div>`;
+};
+$('nextQ').onclick=()=>{if(queue.length){queue.shift();saveQueue();renderAll();}else alert('Queue is empty');};
+$('clearQ').onclick=()=>{queue=[];saveQueue();renderAll();};
+$('addAttendance').onclick=()=>{
+  const driver=$('aDriver').value.trim()||(currentUser?currentUser.name:'');
+  const status=$('aStatus').value;
+  if(!driver){alert('Enter driver name');return;}
+  attendance.push({date:new Date().toLocaleDateString(),driver,status,time:new Date().toLocaleTimeString(),username:currentUser?currentUser.username:'',createdBy:currentUser?currentUser.username:''});
+  saveAttendance(); $('aDriver').value=currentUser?currentUser.name:''; renderAll();
+};
+$('addTrip').onclick=()=>{
+  const driver=$('trDriver').value.trim()||(currentUser?currentUser.name:'');
+  const destination=$('trDestination').value.trim(),passenger=$('trPassenger').value.trim(),fare=$('trFare').value.trim();
+  if(!driver||!destination){alert('Fill driver and destination');return;}
+  trips.push({date:new Date().toLocaleDateString(),driver,destination,passenger,fare:fare||50,username:currentUser?currentUser.username:''});
+  saveTrips(); $('trDestination').value='';$('trPassenger').value='';$('trFare').value=''; renderAll();
+};
+$('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({date,driver,amount:parseInt(amount),status}); saveBoundary(); $('bDriver').value='';$('bAmount').value='';renderAll();};
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 renderAll();
 </script>

@@ -2,9 +2,9 @@
   "name": "toda-qc-system",
   "version": "1.0.0",
   "description": "TODA QC - Queue Management & Boundary Remittance System - VSCODE",
-  "main": "backend/Server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node backend/Server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",

@@ -9,9 +9,9 @@ const PORT = process.env.PORT || 10000;
 
 
 const ADMIN_ACCOUNTS = [
-  { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
-  { username: 'adminmark', password: 'admin123', name: 'Mark Anthony Naguit - AdminMark', role: 'admin', status: 'Active' },
-  { username: 'secretadmin', password: 'toda2024', name: 'Secret Admin', role: 'admin', status: 'Active' }
+  { username: 'admin', password: 'smoker123', name: 'Head Admin', role: 'admin', status: 'Active' },
+  { username: 'adminmark', password: 'admin095', name: 'Mark Anthony Naguit - AdminMark', role: 'admin', status: 'Active' },
+  { username: 'adminbea', password: 'bea2024', name: 'Admin Bea', role: 'admin', status: 'Active' }
 ];
 const ADMIN_ACCOUNT = ADMIN_ACCOUNTS[0];
 

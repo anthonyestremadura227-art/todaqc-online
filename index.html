@@ -45,6 +45,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div class="login-card">
 <div class="text-center mb-3"><span style="font-size:44px">🛺</span></div>
 <h5 class="text-center fw-bold">TODA Queue Management</h5>
+<p class="text-center text-muted" style="font-size:10px">Project 8 TODA, Quezon City<br>Web-Based Platform - Thesis Project</p>
 <div class="mt-3">
 <input id="username" class="form-control mb-2" type="text" placeholder="Username" autocomplete="off">
 <input id="password" class="form-control mb-3" type="password" placeholder="Password" autocomplete="new-password">
@@ -57,7 +58,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div id="registerWrapper" class="login-wrapper hidden">
 <div class="login-card">
 <h5 class="text-center fw-bold">Create Account</h5>
-<p class="text-center text-muted" style="font-size:10px">Driver</p>
+<p class="text-center text-muted" style="font-size:10px">Driver / Passenger Registration</p>
 <input id="regName" class="form-control mb-2" type="text" placeholder="Full Name">
 <input id="regUsername" class="form-control mb-2" type="text" placeholder="Username">
 <input id="regPassword" class="form-control mb-2" type="password" placeholder="Password">
@@ -200,17 +201,44 @@ async function saveQueue(){
   localStorage.setItem('toda_queue', JSON.stringify(queue));
 }
 async function loadQueue(){
+  function sanitizeQueue(arr){
+    if(!Array.isArray(arr)) return [];
+    return arr.filter(q=>{
+      if(!q) return false;
+      if(typeof q==='string') return false;
+      if(!q.name && !q.username) return false;
+      return true;
+    }).map(q=>{
+      return {
+        name: q.name || q.username || 'Unknown',
+        username: q.username || q.name || 'unknown',
+        time: q.time || new Date(q.joinedAt||Date.now()).toLocaleTimeString(),
+        joinedAt: q.joinedAt || Date.now()
+      };
+    });
+  }
   let backendQ = [];
   try{
     const r=await fetch('/api/queue');
     const d=await r.json();
-    if(d.success && d.queue){ backendQ=d.queue; }
-    else if(d.success && d.data){ backendQ=d.data; }
+    if(d.success && d.queue){ backendQ=sanitizeQueue(d.queue); }
+    else if(d.success && d.data){ backendQ=sanitizeQueue(d.data); }
+    else if(Array.isArray(d)){ backendQ=sanitizeQueue(d); }
   }catch(e){}
   const local = localStorage.getItem('toda_queue');
   let localQ = [];
-  if(local){ try{ localQ=JSON.parse(local); }catch(e){} }
-  queue = backendQ.length ? backendQ : localQ;
+  if(local){ try{ localQ=sanitizeQueue(JSON.parse(local)); }catch(e){} }
+  // Use backend if has valid data, else local
+  if(backendQ.length>0){
+    queue = backendQ;
+  }else{
+    queue = localQ;
+  }
+  // If still has undefined, force clean
+  queue = sanitizeQueue(queue);
+  // Save cleaned version
+  localStorage.setItem('toda_queue', JSON.stringify(queue));
+  try{ await fetch('/api/queue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }catch(e){}
 }
 async function saveAttendance(){
   try{ await fetch('/api/attendance',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({attendance})}); }catch(e){}
@@ -302,9 +330,19 @@ function renderAll(){
   if($('statTotal')) $('statTotal').textContent=users.filter(u=>u.role==='driver').length;
   if($('statQueue')) $('statQueue').textContent=queue.length;
   if($('statUsers')) $('statUsers').textContent=users.length;
-  if($('overviewQueue')) $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You)':''}</span><span class="badge-status bg-queuing">${q.time}</span></div>`).join(''):'<small class="text-muted">No queue yet.</small>';
-  if($('queueList')) $('queueList').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You - Auto Joined)':''}</span><div class="d-flex gap-1 align-items-center"><span class="badge-status bg-queuing">${q.time}</span><button class="btn btn-sm btn-light" style="padding:2px 6px" onclick="deleteQueueByUsername('${q.username}')"><i class="bi bi-x-lg"></i></button></div></div>`).join(''):'<small class="text-muted">No queue. Click Join Queue or login as driver to auto-join.</small>';
-  if($('queueMonitor')) $('queueMonitor').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} ${q.name}</span><span class="badge-status bg-queuing">Queuing</span></div>`).join(''):'<small class="text-muted">No drivers in queue.</small>';
+  if($('overviewQueue')) $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>{ const name=q.name||q.username||'Unknown'; const time=q.time||''; return `<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue':''}"><span style="font-size:11px">#${i+1} - ${name} ${currentUser&&q.username===currentUser.username?'(You)':''}</span><span class="badge-status bg-queuing">${time||'Queuing'}</span></div>`; }).join(''):'<small class="text-muted">No queue yet.</small>';
+  if($('queueList')) $('queueList').innerHTML=queue.length?queue.map((q,i)=>{ 
+  const name=q.name||q.username||'Unknown'; 
+  const time=q.time||''; 
+  const uname=q.username||'';
+  const isOwn = currentUser && uname===currentUser.username;
+  const isAdmin = currentUser && currentUser.role==='admin';
+  // Bawal mag X ng iba - Join/Leave lang - X only own or admin
+  const canDelete = isOwn || isAdmin;
+  const xBtn = canDelete ? `<button class="btn btn-sm btn-light" style="padding:2px 6px" onclick="deleteQueueByUsername('${uname}')"><i class="bi bi-x-lg"></i></button>` : '';
+  return `<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${isOwn?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${name} ${isOwn?'(You - Auto Joined)':''}</span><div class="d-flex gap-1 align-items-center"><span class="badge-status bg-queuing">${time||'Queuing'}</span>${xBtn}</div></div>`; 
+}).join(''):'<small class="text-muted">No queue. Click Join Queue or login as driver to auto-join.</small>';
+  if($('queueMonitor')) $('queueMonitor').innerHTML=queue.length?queue.map((q,i)=>{ const name=q.name||q.username||'Unknown'; return `<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} ${name}</span><span class="badge-status bg-queuing">Queuing</span></div>`; }).join(''):'<small class="text-muted">No drivers in queue.</small>';
   if($('attendanceTable')) $('attendanceTable').innerHTML=attendance.length?attendance.map(a=>`<tr><td>${a.date}</td><td>${a.driver} ${a.username?`(${a.username})`:''}</td><td><span class="badge-status ${a.status==='Present'?'bg-active':'bg-inactive'}">${a.status}</span></td><td>${a.time}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteAttendance(${a.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join(''):'<tr><td colspan="5" class="text-center text-muted">No attendance records yet.</td></tr>';
   if($('tripTable')) $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteTrip(${t.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
   if($('boundaryTable')) $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteBoundary(${b.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
@@ -348,6 +386,11 @@ function deleteAttendance(id){
   saveAttendance(); renderAll();
 }
 function deleteQueueByUsername(username){
+  // Bawal mag exis ng iba - check if own or admin
+  if(currentUser && currentUser.username!==username && currentUser.role!=='admin'){
+    alert('Bawal mag remove ng ibang driver - Join/Leave lang pwede - Hindi pwede mag exis ng kaparehas na driver');
+    return;
+  }
   if(!confirm('Remove from queue?')) return;
   queue = queue.filter(q=> q.username!==username);
   saveQueue(); renderAll();

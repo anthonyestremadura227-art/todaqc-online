@@ -45,7 +45,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div class="login-card">
 <div class="text-center mb-3"><span style="font-size:44px">🛺</span></div>
 <h5 class="text-center fw-bold">TODA Queue Management</h5>
-<p class="text-center text-muted" style="font-size:10px">Project 8 TODA, Quezon City<br>Web-Based Platform - Thesis Project</p>
+<p class="text-center text-muted" style="font-size:10px"> QC TODA </p>
 <div class="mt-3">
 <input id="username" class="form-control mb-2" type="text" placeholder="Username" autocomplete="off">
 <input id="password" class="form-control mb-3" type="password" placeholder="Password" autocomplete="new-password">
@@ -88,7 +88,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 </div>
 </div>
 <div class="main-content">
-<div class="topbar"><div><div class="fw-bold" style="font-size:15px" id="pageTitle">Overview Dashboard</div><div style="font-size:11px;color:#6b7280" id="subTitle">TODA QC - Project 8</div></div><div style="font-size:10px;color:#6b7280" id="dateNow"></div></div>
+<div class="topbar"><div><div class="fw-bold" style="font-size:15px" id="pageTitle">Overview Dashboard</div><div style="font-size:11px;color:#6b7280" id="subTitle">TODA QC </div></div><div style="font-size:10px;color:#6b7280" id="dateNow"></div></div>
 <div id="page-overview" class="page">
 <div class="row g-3 mb-3">
 <div class="col-md-4"><div class="stat-card"><div class="stat-label">Total Drivers</div><div class="stat-value" id="statTotal">0</div><div class="stat-label">Registered</div></div></div>
@@ -117,11 +117,11 @@ let queue=[],attendance=[],trips=[],boundaries=[],users=[],tricycles=[];
 let currentUser=null;
 const $=id=>document.getElementById(id);
 const loginWrapper=$('loginWrapper'),registerWrapper=$('registerWrapper'),dash=$('dashboard');
-// ADMIN ACCOUNTS - EDIT HERE - PWEDE MO PALITAN - TODA QC LANG
+
 const ADMIN_ACCOUNTS = [
-  { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
+  { username: 'admin', password: 'smoker123', name: 'Head Admin', role: 'admin', status: 'Active' },
   { username: 'adminmark', password: 'admin123', name: 'Mark Anthony Naguit - AdminMark', role: 'admin', status: 'Active' },
-  { username: 'secretadmin', password: 'toda2024', name: 'Secret Admin', role: 'admin', status: 'Active' }
+  { username: 'adminbea', password: 'bea2024', name: 'Admin Bea', role: 'admin', status: 'Active' }
 ];
 function saveSession(user){
   sessionStorage.setItem('toda_session', JSON.stringify(user));
@@ -256,6 +256,25 @@ function copyPwd(username){
   input.type='text';
   navigator.clipboard.writeText(input.value).then(()=>{ alert('Password copied: '+input.value); input.type=was; }).catch(()=>{ input.select(); document.execCommand('copy'); alert('Password copied'); input.type=was; });
 }
+function removeUser(username){
+  if(['admin','adminmark','secretadmin','adminbea','secretarybea'].includes(username)){
+    if(!confirm('Remove admin account '+username+'? This is a secret admin account - Are you sure?')) return;
+  }else{
+    if(!confirm('Remove user '+username+'? This will delete driver '+username+' from database - Cannot be undone - Are you sure?')) return;
+  }
+  
+  users = users.filter(u=> u.username!==username);
+  localStorage.setItem('toda_users_backup', JSON.stringify(users));
+  queue = queue.filter(q=> q.username!==username);
+  tricycles = tricycles.filter(t=> t.username!==username);
+  attendance = attendance.filter(a=> a.username!==username && a.driver!==username);
+  saveQueue(); saveTricycles(); saveAttendance();
+  
+  fetch('/api/users/'+encodeURIComponent(username), {method:'DELETE'}).then(r=>r.json()).then(d=>{
+    if(d.success){ alert('User '+username+' removed - Database cleaned - Now you can re-register '+username+' with new password if needed'); renderAll(); loadUsers(); }
+    else{ alert('Removed locally - Backend may still have it - Try refresh - '+username+' removed from local'); renderAll(); }
+  }).catch(()=>{ alert('Removed locally - '+username); renderAll(); });
+}
 function changePwd(username){
   const newPass = prompt('Enter new password for '+username+':');
   if(!newPass) return;
@@ -307,13 +326,13 @@ async function loadQueue(){
   const local = localStorage.getItem('toda_queue');
   let localQ = [];
   if(local){ try{ localQ=sanitizeQueue(JSON.parse(local)); }catch(e){} }
-  // Use backend if has valid data, else local
+  
   if(backendQ.length>0){
     queue = backendQ;
   }else{
     queue = localQ;
   }
-  // If still has undefined, force clean
+  
   queue = sanitizeQueue(queue);
   // Save cleaned version
   localStorage.setItem('toda_queue', JSON.stringify(queue));
@@ -414,14 +433,14 @@ function sanitizeTrips(arr){
   return arr.filter(t=> t && t.driver && t.date).map(t=>({id:t.id||Date.now()+Math.random(), date:t.date, driver:t.driver, destination:t.destination||'', passenger:t.passenger||'', fare:t.fare||'', username:t.username||''}));
 }
 function renderAll(){
-  // Sanitize to remove undefined
+  
   attendance = sanitizeAttendance(attendance);
   trips = sanitizeTrips(trips);
   if($('statTotal')) $('statTotal').textContent=users.filter(u=>u.role==='driver').length;
   if($('statQueue')) $('statQueue').textContent=queue.length;
   if($('statUsers')) $('statUsers').textContent=users.length;
   if($('overviewQueue')) $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>{ const name=q.name||q.username||'Unknown'; const time=q.time||''; return `<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue':''}"><span style="font-size:11px">#${i+1} - ${name} ${currentUser&&q.username===currentUser.username?'(You)':''}</span><span class="badge-status bg-queuing">${time||'Queuing'}</span></div>`; }).join(''):'<small class="text-muted">No queue yet.</small>';
-    // Filter admins before rendering
+    
   queue = queue.filter(q=>{ const u = users.find(us=> us.username===q.username); if(u && u.role!=='driver') return false; if(['admin','adminmark','secretadmin','adminbea','secretarybea'].includes(q.username)) return false; return true; });
   if($('queueList')) $('queueList').innerHTML=queue.length?queue.map((q,i)=>{ 
   const name=q.name||q.username||'Unknown'; 
@@ -429,7 +448,7 @@ function renderAll(){
   const uname=q.username||'';
   const isOwn = currentUser && uname===currentUser.username;
   const isAdmin = currentUser && currentUser.role==='admin';
-  // Bawal mag X ng iba - Join/Leave lang - X only own or admin
+  
   const canDelete = isOwn || isAdmin;
   const xBtn = canDelete ? `<button class="btn btn-sm btn-light" style="padding:2px 6px" onclick="deleteQueueByUsername('${uname}')"><i class="bi bi-x-lg"></i></button>` : '';
   return `<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${isOwn?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${name} ${isOwn?'(You - Auto Joined)':''}</span><div class="d-flex gap-1 align-items-center"><span class="badge-status bg-queuing">${time||'Queuing'}</span>${xBtn}</div></div>`; 
@@ -439,8 +458,8 @@ function renderAll(){
   if($('tripTable')) $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteTrip(${t.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
   if($('boundaryTable')) $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteBoundary(${b.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
   if($('incomeTable')) $('incomeTable').innerHTML=boundaries.length?boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td>${b.status}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted">No records yet.</td></tr>';
-  if($('userTable')) $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td>${u.license||'-'}</td><td>${u.plate||'-'}</td><td><div class="d-flex align-items-center gap-1"><input id="pwd-${u.username}" type="password" value="${(u.password||'').replace(/"/g,'&quot;')}" readonly class="form-control form-control-sm" style="font-size:11px;height:28px;width:90px"><button class="btn btn-sm btn-light" style="font-size:10px;padding:2px 6px" onclick="togglePwd('${u.username}')"><i class="bi bi-eye" id="eye-${u.username}"></i></button><button class="btn btn-sm btn-light" style="font-size:10px;padding:2px 6px" onclick="copyPwd('${u.username}')" title="Copy"><i class="bi bi-clipboard"></i></button></div></td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td><td><button class="btn btn-sm btn-light" style="font-size:10px" onclick="changePwd('${u.username}')"><i class="bi bi-key"></i> Change</button></td></tr>`).join('');
-  // Tricycle
+  if($('userTable')) $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td>${u.license||'-'}</td><td>${u.plate||'-'}</td><td><div class="d-flex align-items-center gap-1"><input id="pwd-${u.username}" type="password" value="${(u.password||'').replace(/"/g,'&quot;')}" readonly class="form-control form-control-sm" style="font-size:11px;height:28px;width:90px"><button class="btn btn-sm btn-light" style="font-size:10px;padding:2px 6px" onclick="togglePwd('${u.username}')"><i class="bi bi-eye" id="eye-${u.username}"></i></button><button class="btn btn-sm btn-light" style="font-size:10px;padding:2px 6px" onclick="copyPwd('${u.username}')" title="Copy"><i class="bi bi-clipboard"></i></button></div></td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td><td><div class="d-flex gap-1"><button class="btn btn-sm btn-light" style="font-size:10px" onclick="changePwd('${u.username}')"><i class="bi bi-key"></i> Change</button><button class="btn btn-sm btn-light" style="font-size:10px;background:#fef2f2;border:1px solid #fecaca;color:#991b1b" onclick="removeUser('${u.username}')"><i class="bi bi-trash"></i> Remove</button></div></td></tr>`).join('');
+  
   if($('myTricycleInfo')){
     const mine = tricycles.find(t=> t.username===currentUser?.username) || users.find(u=> u.username===currentUser?.username && u.license);
     if(mine){
@@ -483,7 +502,7 @@ function deleteAttendance(id){
   if(!confirm('Delete this attendance record?')) return;
   attendance = attendance.filter(a=> a.id!==id && a.id!==id.toString());
   if(attendance.length===0 || id===0){
-    // Fallback delete by index if id 0
+    
     attendance = attendance.filter((a,i)=> a.id!==0);
   }
   saveAttendance(); renderAll();
@@ -516,7 +535,7 @@ if($('addTrip')) $('addTrip').onclick=()=>{
   saveTrips(); $('trDestination').value='';$('trPassenger').value='';$('trFare').value=''; renderAll();
 };
 if($('addBoundary')) $('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({id: Date.now(), date,driver,amount:parseInt(amount),status,username:currentUser?currentUser.username:''}); saveBoundary(); $('bDriver').value='';$('bAmount').value='';renderAll();};
-// Enter key support - FIXED - LOG IN LANG
+
 function handleLoginEnter(e){ if(e.key==='Enter'){ $('loginBtn').click(); } }
 if($('username')) $('username').addEventListener('keydown', handleLoginEnter);
 if($('password')) $('password').addEventListener('keydown', handleLoginEnter);
@@ -524,7 +543,7 @@ if($('regUsername')) $('regUsername').addEventListener('keydown', (e)=>{ if(e.ke
 if($('regPassword')) $('regPassword').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
 if($('regLicense')) $('regLicense').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
 if($('regPlate')) $('regPlate').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
-// Login - FIXED - MAG REREKTA SA DASHBOARD
+
 if($('loginBtn')) $('loginBtn').onclick=async()=>{
   const username=$('username').value.trim(),password=$('password').value.trim();
   if(!username||!password){$('msg').textContent='Please enter username and password';return;}
@@ -550,7 +569,7 @@ if($('loginBtn')) $('loginBtn').onclick=async()=>{
       $('msg').textContent=d.message;
     }
   }catch(e){
-    // Offline fallback - check ADMIN_ACCOUNTS array - TODA QC LANG
+    
     const adminFound = ADMIN_ACCOUNTS.find(a=> a.username===username && a.password===password);
     if(adminFound){
       currentUser=adminFound;
@@ -609,7 +628,7 @@ if($('registerBtn')) $('registerBtn').onclick=async()=>{
     setTimeout(()=>{$('showLogin').click();$('username').value=username;},1500);
   }
 };
-// Save Tricycle Info - for existing users
+
 if($('saveTricycle')) $('saveTricycle').onclick=()=>{
   if(!currentUser){ alert('Please login first'); return; }
   const name=$('tName').value.trim()||currentUser.name, license=$('tLicense').value.trim(), plate=$('tPlate').value.trim();
@@ -620,7 +639,7 @@ if($('saveTricycle')) $('saveTricycle').onclick=()=>{
   }else{
     tricycles.push({name, username:currentUser.username, license, plate, status:'Pending'});
   }
-  // Also update users
+  
   const uIdx = users.findIndex(u=> u.username===currentUser.username);
   if(uIdx>=0){ users[uIdx].license=license; users[uIdx].plate=plate; users[uIdx].name=name; localStorage.setItem('toda_users_backup', JSON.stringify(users)); }
   saveTricycles();
@@ -628,7 +647,7 @@ if($('saveTricycle')) $('saveTricycle').onclick=()=>{
   renderAll();
 };
 if('serviceWorker' in navigator){
-  // Unregister old SW to clear cache
+  
   navigator.serviceWorker.getRegistrations().then(regs=>{ regs.forEach(r=>r.unregister()); });
 }
 renderAll();

@@ -23,7 +23,13 @@ function writeJson(filePath, data){
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
-const ADMIN_ACCOUNT = { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' };
+// ADMIN ACCOUNTS - EDIT HERE - PWEDE MO PALITAN PASSWORD - SECRET ADMIN - IKAW LANG NAKAKAALAM
+const ADMIN_ACCOUNTS = [
+  { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
+  { username: 'secretadmin', password: 'toda2024', name: 'Secret Admin', role: 'admin', status: 'Active' }
+];
+const ADMIN_ACCOUNT = ADMIN_ACCOUNTS[0]; // Main admin
+
 
 if(!fs.existsSync(usersFile)) writeJson(usersFile, [ADMIN_ACCOUNT]);
 if(!fs.existsSync(queueFile)) writeJson(queueFile, []);
@@ -35,9 +41,10 @@ app.post('/api/login', (req,res)=>{
   const { username, password } = req.body;
   const u = (username||'').trim();
   const p = (password||'').trim();
-  if(u === ADMIN_ACCOUNT.username && p === ADMIN_ACCOUNT.password){
-    console.log(`Login: ${u}`); console.log(`Success: ${u}`);
-    return res.json({ success: true, user: ADMIN_ACCOUNT });
+  const adminFound = ADMIN_ACCOUNTS.find(a=> a.username===u && a.password===p);
+  if(adminFound){
+    console.log(`Login: ${u}`); console.log(`Success: ${u} - Admin`);
+    return res.json({ success: true, user: adminFound });
   }
   const users = readJson(usersFile, []);
   const found = users.find(x => x.username === u && x.password === p);

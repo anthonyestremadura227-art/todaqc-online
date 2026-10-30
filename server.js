@@ -1,149 +1,198 @@
+
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors');
+
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-app.use(express.json());
-app.use(express.static(__dirname));
-
-const usersFile = path.join(__dirname, 'users.json');
-const queueFile = path.join(__dirname, 'queue.json');
-const attendanceFile = path.join(__dirname, 'attendance.json');
-const tripsFile = path.join(__dirname, 'trips.json');
-const boundaryFile = path.join(__dirname, 'boundary.json');
-
-function readJson(filePath, defaultVal){
-  try{
-    if(!fs.existsSync(filePath)) return defaultVal;
-    return JSON.parse(fs.readFileSync(filePath,'utf8'));
-  }catch(e){ return defaultVal; }
-}
-function writeJson(filePath, data){
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-}
-
-
+// ADMIN ACCOUNTS - EDIT HERE - PWEDE MO PALITAN PASSWORD - SECRET ADMIN - TODA QC LANG
 const ADMIN_ACCOUNTS = [
-  { username: 'adminmark', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
+  { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
+  { username: 'adminmark', password: 'admin123', name: 'Mark Anthony Naguit - AdminMark', role: 'admin', status: 'Active' },
   { username: 'secretadmin', password: 'toda2024', name: 'Secret Admin', role: 'admin', status: 'Active' }
 ];
-const ADMIN_ACCOUNT = ADMIN_ACCOUNTS[0]; // Main admin
+const ADMIN_ACCOUNT = ADMIN_ACCOUNTS[0];
 
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-if(!fs.existsSync(usersFile)) writeJson(usersFile, [ADMIN_ACCOUNT]);
-if(!fs.existsSync(queueFile)) writeJson(queueFile, []);
-if(!fs.existsSync(attendanceFile)) writeJson(attendanceFile, []);
-if(!fs.existsSync(tripsFile)) writeJson(tripsFile, []);
-if(!fs.existsSync(boundaryFile)) writeJson(boundaryFile, []);
+// Robust find index.html
+function findIndexHtml(){
+  const possible = [
+    path.join(__dirname, 'index.html'),
+    path.join(__dirname, 'frontend', 'index.html'),
+    path.join(__dirname, '..', 'frontend', 'index.html'),
+    path.join(__dirname, 'frontend', 'TODA_QC_BarangayLink_Style.html'),
+    path.join(process.cwd(), 'index.html')
+  ];
+  for(const p of possible){
+    if(fs.existsSync(p)){
+      console.log('Found index.html at:', p);
+      return p;
+    }
+  }
+  return null;
+}
 
+const DATA_DIR = __dirname;
+const FILES = {
+  users: path.join(DATA_DIR, 'users.json'),
+  queue: path.join(DATA_DIR, 'queue.json'),
+  attendance: path.join(DATA_DIR, 'attendance.json'),
+  trips: path.join(DATA_DIR, 'trips.json'),
+  boundary: path.join(DATA_DIR, 'boundary.json')
+};
+
+function readJSON(file, def){
+  try{
+    if(!fs.existsSync(file)){
+      fs.writeFileSync(file, JSON.stringify(def, null, 2));
+      return def;
+    }
+    const data = fs.readFileSync(file, 'utf8');
+    return data ? JSON.parse(data) : def;
+  }catch(e){
+    console.error('Read error', file, e.message);
+    return def;
+  }
+}
+function writeJSON(file, data){
+  try{
+    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+  }catch(e){
+    console.error('Write error', file, e.message);
+  }
+}
+
+// Init files
+if(!fs.existsSync(FILES.users)) writeJSON(FILES.users, ADMIN_ACCOUNTS);
+if(!fs.existsSync(FILES.queue)) writeJSON(FILES.queue, []);
+if(!fs.existsSync(FILES.attendance)) writeJSON(FILES.attendance, []);
+if(!fs.existsSync(FILES.trips)) writeJSON(FILES.trips, []);
+if(!fs.existsSync(FILES.boundary)) writeJSON(FILES.boundary, []);
+
+// API - Login - FIXED - MAG REREKTA SA DASHBOARD
 app.post('/api/login', (req,res)=>{
-  const { username, password } = req.body;
-  const u = (username||'').trim();
-  const p = (password||'').trim();
-  const adminFound = ADMIN_ACCOUNTS.find(a=> a.username===u && a.password===p);
-  if(adminFound){
-    console.log(`Login: ${u}`); console.log(`Success: ${u} - Admin`);
-    return res.json({ success: true, user: adminFound });
+  try{
+    const { username, password } = req.body;
+    const u = (username||'').trim();
+    const p = (password||'').trim();
+    console.log(`Login attempt: ${u}`);
+    
+    // Check ADMIN_ACCOUNTS first
+    const adminFound = ADMIN_ACCOUNTS.find(a=> a.username===u && a.password===p);
+    if(adminFound){
+      console.log(`Success: ${u} - Admin`);
+      return res.json({ success: true, user: adminFound });
+    }
+    
+    // Check regular users from file + admin accounts
+    let users = readJSON(FILES.users, []);
+    // Merge with ADMIN_ACCOUNTS for login check
+    const allUsers = [...ADMIN_ACCOUNTS, ...users];
+    // Dedupe by username - keep first (admin)
+    const map = {};
+    allUsers.forEach(x=>{ if(!map[x.username]) map[x.username]=x; });
+    const finalUsers = Object.values(map);
+    
+    const found = finalUsers.find(x=> x.username===u && (x.password===p || x.username===x.password || !x.password));
+    // For users without password field saved, check if password matches username or saved
+    // Actually check stored users with password
+    let stored = users.find(x=> x.username===u);
+    if(stored){
+      if(stored.password && stored.password===p){
+        console.log(`Success: ${u} - Driver`);
+        return res.json({ success: true, user: stored });
+      }
+      // If no password field but user exists, allow (for old data)
+      if(!stored.password){
+        console.log(`Success: ${u} - Driver (no pwd)`);
+        return res.json({ success: true, user: stored });
+      }
+    }
+    
+    // Also check if user exists with same username/password pattern
+    const simple = finalUsers.find(x=> x.username===u && x.password===p);
+    if(simple){
+      return res.json({ success: true, user: simple });
+    }
+    
+    console.log(`Failed login: ${u}`);
+    return res.json({ success: false, message: 'Invalid username or password' });
+  }catch(e){
+    console.error('Login error', e);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
-  const users = readJson(usersFile, []);
-  const found = users.find(x => x.username === u && x.password === p);
-  if(found){
-    console.log(`Login: ${u}`); console.log(`Success: ${u}`);
-    return res.json({ success: true, user: found });
-  }
-  console.log(`Login: ${u}`); console.log(`Failed: ${u}`);
-  return res.json({ success: false, message: 'Invalid username or password' });
-});
-
-app.post('/api/register', (req,res)=>{
-  const { name, username, password, role } = req.body;
-  const u = (username||'').trim();
-  const n = (name||'').trim();
-  const p = (password||'').trim();
-  const r = (role||'driver').trim();
-  if(!n || !u || !p) return res.json({ success: false, message: 'Please fill all fields' });
-  if(u.length < 3) return res.json({ success: false, message: 'Username must be at least 3 characters' });
-  if(p.length < 6) return res.json({ success: false, message: 'Password must be at least 6 characters' });
-  let users = readJson(usersFile, []);
-  if(users.find(x => x.username === u)) return res.json({ success: false, message: 'Username already exists' });
-  const newUser = { username: u, password: p, name: n, role: r, status: 'Pending', createdAt: new Date().toISOString() };
-  users.push(newUser);
-  writeJson(usersFile, users);
-  console.log(`Registered: ${u} - ${r}`);
-  return res.json({ success: true, user: newUser, message: 'Account created' });
-});
-
-app.post('/api/activate', (req,res)=>{
-  const { username } = req.body;
-  const u = (username||'').trim();
-  let users = readJson(usersFile, []);
-  const found = users.find(x => x.username === u);
-  if(found && found.status !== 'Active'){ found.status = 'Active'; writeJson(usersFile, users); console.log(`Activated: ${u}`); }
-  return res.json({ success: true });
 });
 
 app.get('/api/users', (req,res)=>{
-  const users = readJson(usersFile, []);
-  const safe = users.map(x => ({ username: x.username, name: x.name, role: x.role, status: x.status, createdAt: x.createdAt, password: x.password }));
-  return res.json({ success: true, users: safe });
-});
-
-app.get('/api/queue', (req,res)=>{ res.json({ success: true, queue: readJson(queueFile, []) }); });
-app.post('/api/queue', (req,res)=>{ writeJson(queueFile, req.body.queue||[]); res.json({ success: true }); });
-
-app.get('/api/attendance', (req,res)=>{ res.json({ success: true, attendance: readJson(attendanceFile, []) }); });
-app.post('/api/attendance', (req,res)=>{ writeJson(attendanceFile, req.body.attendance||[]); console.log(`Attendance saved - Total: ${(req.body.attendance||[]).length}`); res.json({ success: true }); });
-
-app.get('/api/trips', (req,res)=>{ res.json({ success: true, trips: readJson(tripsFile, []) }); });
-app.post('/api/trips', (req,res)=>{ writeJson(tripsFile, req.body.trips||[]); res.json({ success: true }); });
-
-app.get('/api/boundary', (req,res)=>{ res.json({ success: true, boundaries: readJson(boundaryFile, []) }); });
-app.post('/api/boundary', (req,res)=>{ writeJson(boundaryFile, req.body.boundaries||[]); res.json({ success: true }); });
-
-// Robust static file handling - try multiple locations
-const possibleIndexPaths = [
-  path.join(__dirname, 'index.html'),
-  path.join(__dirname, 'frontend', 'index.html'),
-  path.join(__dirname, '..', 'frontend', 'index.html'),
-  path.join(__dirname, 'public', 'index.html')
-];
-
-function findIndexHtml(){
-  for(const p of possibleIndexPaths){
-    if(fs.existsSync(p)) return p;
-  }
-  return possibleIndexPaths[0];
-}
-
-app.get('/', (req,res)=>{
-  const indexPath = findIndexHtml();
-  console.log(`Serving index from: ${indexPath} - Exists: ${fs.existsSync(indexPath)}`);
-  if(fs.existsSync(indexPath)){
-    res.sendFile(indexPath);
-  } else {
-    res.status(404).send(`Not Found - index.html not found. Checked: ${possibleIndexPaths.join(', ')} - Files in dir: ${fs.readdirSync(__dirname).join(', ')}`);
+  try{
+    let users = readJSON(FILES.users, []);
+    // Always include ADMIN_ACCOUNTS
+    const map = {};
+    [...ADMIN_ACCOUNTS, ...users].forEach(u=>{ if(u.username) map[u.username]=u; });
+    const merged = Object.values(map);
+    res.json({ success: true, users: merged });
+  }catch(e){
+    res.json({ success: true, users: ADMIN_ACCOUNTS });
   }
 });
 
-// Catch-all for SPA - must be last
+app.post('/api/register', (req,res)=>{
+  try{
+    const { username, password, name, role } = req.body;
+    const u = (username||'').trim();
+    if(!u || !password) return res.json({ success: false, message: 'Username and password required' });
+    let users = readJSON(FILES.users, []);
+    if(users.find(x=>x.username===u) || ADMIN_ACCOUNTS.find(a=>a.username===u)){
+      return res.json({ success: false, message: 'Username already exists' });
+    }
+    const newUser = { username: u, password: password, name: name||u, role: role||'driver', status: 'Active', createdAt: new Date().toISOString() };
+    users.push(newUser);
+    writeJSON(FILES.users, users);
+    res.json({ success: true, user: newUser });
+  }catch(e){
+    res.json({ success: false, message: 'Server error' });
+  }
+});
+
+// Other APIs - queue, attendance, trips, boundary - file based
+app.get('/api/:type', (req,res)=>{
+  const t = req.params.type;
+  if(!FILES[t]) return res.json({ success: false });
+  const data = readJSON(FILES[t], []);
+  res.json({ success: true, data, [t]: data, users: t==='users'?data:undefined });
+});
+app.post('/api/:type', (req,res)=>{
+  const t = req.params.type;
+  if(!FILES[t]) return res.json({ success: false });
+  const body = req.body;
+  let data = readJSON(FILES[t], []);
+  if(Array.isArray(body)){
+    data = body;
+  }else if(body.data){
+    data = body.data;
+  }else{
+    data.push(body);
+  }
+  writeJSON(FILES[t], data);
+  res.json({ success: true, data });
+});
+
+// Serve static - frontend files
+app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+// Catch all - serve index.html
 app.get('*', (req,res)=>{
-  if(req.path.startsWith('/api/')) return res.status(404).json({ success: false, message: 'API not found' });
   const indexPath = findIndexHtml();
-  if(fs.existsSync(indexPath)){
-    res.sendFile(indexPath);
-  } else {
-    res.status(404).send('Not Found - index.html missing');
+  if(indexPath){
+    return res.sendFile(indexPath);
   }
+  return res.status(404).send('Not Found - index.html missing. Make sure index.html is in root or frontend folder.');
 });
 
-app.listen(PORT, ()=>{
-  console.log(`TODA QC - Single Admin Account`);
-  console.log(`Port ${PORT}`);
-  console.log(`Checking index paths:`);
-  possibleIndexPaths.forEach(p=> console.log(`  ${p} - Exists: ${fs.existsSync(p)}`));
-  console.log(`Serving from: ${findIndexHtml()}`);
-  console.log(`Admin: ${ADMIN_ACCOUNT.username} / ${ADMIN_ACCOUNT.password} - ${ADMIN_ACCOUNT.name} - Admin`);
-  console.log(`Files in __dirname: ${fs.readdirSync(__dirname).join(', ')}`);
-  console.log(`================================`);
-});
+app.listen(PORT, ()=>{ console.log(`TODA QC Server running on port ${PORT}`); console.log(`Admin accounts:`, ADMIN_ACCOUNTS.map(a=>a.username).join(', ')); });

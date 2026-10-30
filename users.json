@@ -1,0 +1,17 @@
+[
+  {
+    "username": "admin",
+    "password": "smoker123",
+    "name": "Mark Anthony Naguit",
+    "role": "admin",
+    "status": "Active"
+  },
+  {
+    "username": "jomar",
+    "password": "smoker123",
+    "name": "jom",
+    "role": "driver",
+    "status": "Active",
+    "createdAt": "2026-10-30T10:45:15.577Z"
+  }
+]

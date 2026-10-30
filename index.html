@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TODA QC - Queue Management & Boundary Remittance System</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+:root{--primary:#1e3a8a;--secondary:#2563eb;--dark:#111827}
+body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
+.hidden{display:none !important}
+.login-wrapper{background:linear-gradient(135deg,var(--primary),var(--secondary));min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.25);width:100%;max-width:420px;padding:32px}
+.dashboard{display:flex;min-height:100vh}
+.sidebar{width:260px;background:var(--dark);color:#fff;padding:20px;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto}
+.nav-menu{margin-top:24px;display:flex;flex-direction:column;gap:4px;flex:1}
+.nav-item{padding:10px 14px;border-radius:10px;font-size:13px;cursor:pointer;display:flex;gap:10px;align-items:center}
+.nav-item:hover{background:#1f2937}
+.nav-item.active{background:#1f2937;border-left:3px solid var(--secondary)}
+.main-content{margin-left:260px;flex:1;padding:24px}
+.topbar{background:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.stat-card{background:#fff;border-radius:16px;padding:18px;border:1px solid #e5e7eb}
+.stat-value{font-size:28px;font-weight:800}
+.stat-label{font-size:11px;color:#6b7280;text-transform:uppercase}
+.content-card{background:#fff;border-radius:16px;padding:18px;border:1px solid #e5e7eb;margin-bottom:16px}
+.badge-status{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700}
+.bg-available{background:#dcfce7;color:#166534}
+.bg-pending{background:#fef9c3;color:#854d0e}
+.bg-active{background:#dcfce7;color:#166534}
+.bg-inactive{background:#fee2e2;color:#991b1b}
+.table{font-size:12px}
+.table th{font-size:10px;text-transform:uppercase;color:#6b7280;background:#f8fafc}
+.form-control,.form-select{font-size:12px;padding:10px 12px;border-radius:10px}
+.btn{font-size:12px;padding:10px 16px;border-radius:10px;font-weight:600}
+@media(max-width:900px){.sidebar{width:100%;height:auto;position:relative}.main-content{margin-left:0}.dashboard{flex-direction:column}}
+</style>
+</head>
+<body>
+<div id="loginWrapper" class="login-wrapper">
+<div class="login-card">
+<div class="text-center mb-3"><span style="font-size:44px">🛺</span></div>
+<h5 class="text-center fw-bold">TODA Queue Management<br>& Daily Boundary Remittance System</h5>
+<p class="text-center text-muted" style="font-size:10px">Project 8 TODA, Quezon City<br>Web-Based Platform - Thesis Project</p>
+<div class="mt-3">
+<input id="username" class="form-control mb-2" type="text" placeholder="Username" autocomplete="off">
+<input id="password" class="form-control mb-3" type="password" placeholder="Password">
+<button id="loginBtn" class="btn btn-dark w-100">Login</button>
+<div class="text-center mt-3"><a href="#" id="showRegister" style="font-size:11px;text-decoration:none">Don't have an account? Create account</a></div>
+<div id="msg" class="text-center mt-2" style="font-size:11px;color:#dc2626;min-height:16px"></div>
+</div>
+<div class="text-center mt-4" style="font-size:9px;color:#9ca3af">todaqc.online</div>
+</div>
+</div>
+<div id="registerWrapper" class="login-wrapper hidden">
+<div class="login-card">
+<h5 class="text-center fw-bold">Create Account</h5>
+<p class="text-center text-muted" style="font-size:10px">Driver / Passenger Registration</p>
+<input id="regName" class="form-control mb-2" type="text" placeholder="Full Name">
+<input id="regUsername" class="form-control mb-2" type="text" placeholder="Username">
+<input id="regPassword" class="form-control mb-2" type="password" placeholder="Password">
+<select id="regRole" class="form-select mb-3">
+<option value="driver">Driver</option>
+<option value="passenger">Passenger</option>
+</select>
+<button id="registerBtn" class="btn btn-dark w-100">Create Account</button>
+<div class="text-center mt-3"><a href="#" id="showLogin" style="font-size:11px;text-decoration:none">Already have an account? Login</a></div>
+<div id="regMsg" class="text-center mt-2" style="font-size:11px;min-height:16px"></div>
+</div>
+</div>
+<div id="dashboard" class="dashboard hidden">
+<div class="sidebar">
+<div><div style="font-weight:800;font-size:18px"><i class="bi bi-truck-front me-2"></i>TODA QC</div><div style="font-size:10px;opacity:.6">Queue Management & Boundary Remittance<br>Project 8, Quezon City</div></div>
+<div class="mt-3 p-2 rounded" style="background:#1f2937;font-size:10px" id="userInfo"></div>
+<div class="nav-menu">
+<div class="nav-item active" data-page="overview"><i class="bi bi-grid"></i> Overview</div>
+<div class="nav-item admin-only-menu" data-page="drivers"><i class="bi bi-people"></i> Driver Management</div>
+<div class="nav-item admin-only-menu" data-page="tricycles"><i class="bi bi-truck-front"></i> Tricycle Management</div>
+<div class="nav-item" data-page="queue"><i class="bi bi-list-ol"></i> Queue Management</div>
+<div class="nav-item" data-page="attendance"><i class="bi bi-calendar-check"></i> Attendance</div>
+<div class="nav-item" data-page="trips"><i class="bi bi-signpost-split"></i> Trip History</div>
+<div class="nav-item admin-only-menu" data-page="boundary"><i class="bi bi-cash-stack"></i> Boundary Remittance</div>
+<div class="nav-item admin-only-menu" data-page="income"><i class="bi bi-graph-up"></i> Income Reports</div>
+<div class="nav-item admin-only-menu" data-page="users"><i class="bi bi-person-gear"></i> User Management</div>
+<div class="nav-item" id="logoutMenu"><i class="bi bi-box-arrow-left"></i> Logout</div>
+</div>
+</div>
+<div class="main-content">
+<div class="topbar"><div><div class="fw-bold" style="font-size:15px" id="pageTitle">Overview Dashboard</div><div style="font-size:11px;color:#6b7280">Web-Based TODA Queue Management and Daily Boundary Remittance System</div></div><div style="font-size:10px;color:#6b7280" id="dateNow"></div></div>
+<div id="page-overview" class="page"><div class="row g-3 mb-3"><div class="col-md-3"><div class="stat-card"><div class="stat-label">Total Drivers</div><div class="stat-value" id="statTotal">0</div></div></div><div class="col-md-3"><div class="stat-card"><div class="stat-label">Available</div><div class="stat-value" id="statAvail">0</div></div></div><div class="col-md-3"><div class="stat-card"><div class="stat-label">On Trip</div><div class="stat-value" id="statTrip">0</div></div></div><div class="col-md-3"><div class="stat-card"><div class="stat-label">Today Collection</div><div class="stat-value" style="font-size:20px">₱0</div></div></div></div><div class="row g-3"><div class="col-md-6"><div class="content-card"><h6><i class="bi bi-list-ol"></i> Current Queue - Live</h6><div id="overviewQueue"><small class="text-muted">No queue yet. Register drivers to populate.</small></div></div></div><div class="col-md-6"><div class="content-card"><h6><i class="bi bi-cash-stack"></i> Boundary - Today</h6><div id="overviewBoundary"><small class="text-muted">No records yet.</small></div></div></div></div></div>
+<div id="page-drivers" class="page hidden"><div class="content-card"><h6><i class="bi bi-person-plus"></i> Driver Registration</h6><div class="row g-2 mb-3"><div class="col-md-6"><input id="dName" class="form-control" placeholder="Full Name"></div><div class="col-md-6"><input id="dLicense" class="form-control" placeholder="License No"></div><div class="col-md-6"><input id="dContact" class="form-control" placeholder="Contact"></div><div class="col-md-6"><input id="dAddress" class="form-control" placeholder="Address"></div></div><button id="addDriver" class="btn btn-dark">Register Driver</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Name</th><th>License</th><th>Contact</th><th>Status</th></tr></thead><tbody id="driverTable"></tbody></table></div></div></div>
+<div id="page-tricycles" class="page hidden"><div class="content-card"><h6><i class="bi bi-truck-front"></i> Tricycle Registration</h6><div class="row g-2 mb-3"><div class="col-md-6"><input id="tNumber" class="form-control" placeholder="TODA No"></div><div class="col-md-6"><input id="tPlate" class="form-control" placeholder="Plate No"></div><div class="col-md-6"><input id="tDriver" class="form-control" placeholder="Assigned Driver"></div><div class="col-md-6"><input id="tModel" class="form-control" placeholder="Model"></div></div><button id="addTricycle" class="btn btn-dark">Register Tricycle</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>TODA No</th><th>Plate</th><th>Driver</th><th>Status</th></tr></thead><tbody id="tricycleTable"></tbody></table></div></div></div>
+<div id="page-queue" class="page hidden"><div class="row g-3"><div class="col-md-6"><div class="content-card"><h6><i class="bi bi-list-ol"></i> Digital Queue</h6><div id="queueList"></div><div class="d-flex gap-2 mt-3"><button id="nextQ" class="btn btn-dark flex-fill">Next</button><button id="clearQ" class="btn btn-light flex-fill">Clear Queue</button></div></div></div><div class="col-md-6"><div class="content-card"><h6><i class="bi bi-eye"></i> Queue Monitoring</h6><div id="queueMonitor"></div><button id="addQueue" class="btn btn-outline-dark w-100 mt-3">Add to Queue</button></div></div></div></div>
+<div id="page-attendance" class="page hidden"><div class="content-card"><h6><i class="bi bi-calendar-check"></i> Attendance</h6><div class="row g-2 mb-3"><div class="col-md-8"><input id="aDriver" class="form-control" placeholder="Driver Name"></div><div class="col-md-4"><select id="aStatus" class="form-select"><option>Present</option><option>Absent</option></select></div></div><button id="addAttendance" class="btn btn-dark">Record Attendance</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Status</th><th>Time</th></tr></thead><tbody id="attendanceTable"></tbody></table></div></div></div>
+<div id="page-trips" class="page hidden"><div class="content-card"><h6><i class="bi bi-signpost-split"></i> Trip History</h6><div class="row g-2 mb-3"><div class="col-md-6"><input id="trDriver" class="form-control" placeholder="Driver"></div><div class="col-md-6"><input id="trDestination" class="form-control" placeholder="Destination"></div><div class="col-md-6"><input id="trPassenger" class="form-control" placeholder="Passenger"></div><div class="col-md-6"><input id="trFare" class="form-control" type="number" placeholder="Fare"></div></div><button id="addTrip" class="btn btn-dark">Record Trip</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Destination</th><th>Passenger</th><th>Fare</th></tr></thead><tbody id="tripTable"></tbody></table></div></div></div>
+<div id="page-boundary" class="page hidden"><div class="content-card"><h6><i class="bi bi-cash-stack"></i> Daily Boundary Remittance</h6><div class="row g-2 mb-3"><div class="col-md-4"><input id="bDriver" class="form-control" placeholder="Driver"></div><div class="col-md-3"><input id="bAmount" class="form-control" type="number" placeholder="Amount"></div><div class="col-md-3"><input id="bDate" class="form-control" type="date"></div><div class="col-md-2"><select id="bStatus" class="form-select"><option>Paid</option><option>Unpaid</option><option>Partial</option></select></div></div><button id="addBoundary" class="btn btn-dark">Record Boundary</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th></tr></thead><tbody id="boundaryTable"></tbody></table></div></div></div>
+<div id="page-income" class="page hidden"><div class="content-card"><h6><i class="bi bi-graph-up"></i> Income Reports</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Date</th><th>Total Drivers</th><th>Paid</th><th>Unpaid</th><th>Total Collection</th></tr></thead><tbody id="incomeTable"></tbody></table></div></div></div>
+<div id="page-users" class="page hidden"><div class="content-card"><h6><i class="bi bi-person-gear"></i> User Management</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Status</th></tr></thead><tbody id="userTable"></tbody></table></div></div></div>
+</div>
+</div>
+<script>
+let drivers=[],tricycles=[],queue=[],attendance=[],trips=[],boundaries=[],users=[];
+let currentUser=null;
+const $=id=>document.getElementById(id);
+const loginWrapper=$('loginWrapper'),registerWrapper=$('registerWrapper'),dash=$('dashboard');
+$('showRegister').onclick=(e)=>{e.preventDefault();loginWrapper.classList.add('hidden');dash.classList.add('hidden');registerWrapper.classList.remove('hidden');};
+$('showLogin').onclick=(e)=>{e.preventDefault();registerWrapper.classList.add('hidden');dash.classList.add('hidden');loginWrapper.classList.remove('hidden');$('username').value='';$('password').value='';$('msg').textContent='';$('regMsg').textContent='';};
+function applyRoleVisibility(role){
+  if(role!=='admin'){
+    document.querySelectorAll('.admin-only-menu').forEach(el=>el.classList.add('hidden'));
+  }else{
+    document.querySelectorAll('.admin-only-menu').forEach(el=>el.classList.remove('hidden'));
+  }
+  document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+  $('page-overview').classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  document.querySelector('[data-page="overview"]').classList.add('active');
+  $('pageTitle').textContent='Overview Dashboard';
+}
+$('loginBtn').onclick=async()=>{
+  const username=$('username').value.trim(),password=$('password').value.trim();
+  if(!username||!password){$('msg').textContent='Please enter username and password';return;}
+  $('msg').textContent='Authenticating...';
+  try{
+    const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+    const d=await r.json();
+    if(d.success){
+      currentUser=d.user;
+      if(currentUser.status!=='Active'){
+        currentUser.status='Active';
+        try{await fetch('/api/activate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});}catch(e){}
+      }
+      $('userInfo').textContent=`${d.user.role} | ${d.user.name} | ${d.user.username} | ${currentUser.status}`;
+      loginWrapper.classList.add('hidden');registerWrapper.classList.add('hidden');dash.classList.remove('hidden');
+      applyRoleVisibility(d.user.role);
+      await loadUsers();
+      renderAll();
+      $('msg').textContent='';
+    } else {
+      $('msg').textContent=d.message;
+    }
+  }catch(e){
+    if(username==='admin'&&password==='smoker123'){
+      currentUser={username:'admin',role:'admin',name:'Mark Anthony Naguit',status:'Active'};
+      $('userInfo').textContent=`admin | Mark Anthony Naguit | admin | Active`;
+      loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
+      applyRoleVisibility('admin');
+      renderAll();
+    } else {
+      // Fallback local check from users array
+      const found=users.find(u=>u.username===username&&u.password===password);
+      if(found){
+        currentUser=found;currentUser.status='Active';
+        $('userInfo').textContent=`${found.role} | ${found.name} | ${found.username} | Active`;
+        loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
+        applyRoleVisibility(found.role);
+        renderAll();
+      } else {
+        $('msg').textContent='Invalid username or password';
+      }
+    }
+  }
+};
+$('registerBtn').onclick=async()=>{
+  const name=$('regName').value.trim(),username=$('regUsername').value.trim(),password=$('regPassword').value.trim(),role=$('regRole').value;
+  if(!name||!username||!password){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Please fill all fields';return;}
+  if(username.length<3){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Username must be at least 3 characters';return;}
+  if(password.length<6){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Password must be at least 6 characters';return;}
+  $('regMsg').style.color='#6b7280';$('regMsg').textContent='Creating account...';
+  try{
+    const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,username,password,role})});
+    const d=await r.json();
+    if(d.success){
+      $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created - You can now login: '+d.user.username;
+      $('regName').value='';$('regUsername').value='';$('regPassword').value='';
+      setTimeout(()=>{$('showLogin').click();$('username').value=d.user.username;},1200);
+    }else{$('regMsg').style.color='#dc2626';$('regMsg').textContent=d.message;}
+  }catch(e){
+    if(users.find(u=>u.username===username)){ $('regMsg').style.color='#dc2626';$('regMsg').textContent='Username already exists'; return; }
+    users.push({username,name,role,password,status:'Pending'});
+    $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created (local) - You can now login: '+username;
+    $('regName').value='';$('regUsername').value='';$('regPassword').value='';
+    setTimeout(()=>{$('showLogin').click();$('username').value=username;},1200);
+  }
+};
+async function loadUsers(){
+  try{
+    const r=await fetch('/api/users');
+    const d=await r.json();
+    if(d.success){ users=d.users; }
+  }catch(e){}
+}
+$('logoutMenu').onclick=()=>{localStorage.clear();sessionStorage.clear();location.reload();};
+document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
+  item.onclick=()=>{
+    if(item.classList.contains('hidden')) return;
+    document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+    item.classList.add('active');
+    const page=item.dataset.page;
+    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+    $('page-'+page).classList.remove('hidden');
+    $('pageTitle').textContent=item.textContent.trim();
+  };
+});
+$('dateNow').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+function renderAll(){
+  $('statTotal').textContent=drivers.length;
+  $('statAvail').textContent=drivers.filter(d=>d.status==='Available').length;
+  $('statTrip').textContent=drivers.filter(d=>d.status==='On Trip').length;
+  $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} - ${q.name}</span><span class="badge-status bg-available">${q.time}</span></div>`).join(''):'<small class="text-muted">No queue yet.</small>';
+  $('overviewBoundary').innerHTML=boundaries.length?boundaries.map(b=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">${b.driver} - ₱${b.amount}</span><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></div>`).join(''):'<small class="text-muted">No records yet.</small>';
+  $('driverTable').innerHTML=drivers.map(d=>`<tr><td>${d.name}</td><td>${d.license}</td><td>${d.contact}</td><td><span class="badge-status bg-available">${d.status}</span></td></tr>`).join('');
+  $('tricycleTable').innerHTML=tricycles.map(t=>`<tr><td>${t.number}</td><td>${t.plate}</td><td>${t.driver}</td><td><span class="badge-status bg-available">${t.status}</span></td></tr>`).join('');
+  $('queueList').innerHTML=queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} - ${q.name}</span><span class="badge-status bg-available">${q.time}</span></div>`).join('');
+  $('queueMonitor').innerHTML=drivers.map(d=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">${d.name}</span><span class="badge-status bg-available">${d.status}</span></div>`).join('');
+  $('attendanceTable').innerHTML=attendance.map(a=>`<tr><td>${a.date}</td><td>${a.driver}</td><td>${a.status}</td><td>${a.time}</td></tr>`).join('');
+  $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td></tr>`).join('');
+  $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td></tr>`).join('');
+  $('incomeTable').innerHTML=boundaries.length?boundaries.map(b=>`<tr><td>${b.date}</td><td>1</td><td>${b.status==='Paid'?1:0}</td><td>${b.status!=='Paid'?1:0}</td><td>₱${b.amount}</td></tr>`).join(''):'<tr><td colspan="5" class="text-center text-muted">No income records yet.</td></tr>';
+  $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td></tr>`).join('');
+}
+$('addDriver').onclick=()=>{const name=$('dName').value.trim(),license=$('dLicense').value.trim(),contact=$('dContact').value.trim(),address=$('dAddress').value.trim();if(!name){alert('Please enter driver name');return;}drivers.push({name,license,contact,address,status:'Available'});$('dName').value='';$('dLicense').value='';$('dContact').value='';$('dAddress').value='';renderAll();};
+$('addTricycle').onclick=()=>{const number=$('tNumber').value.trim(),plate=$('tPlate').value.trim(),driver=$('tDriver').value.trim();if(!number){alert('Please enter TODA number');return;}tricycles.push({number,plate,driver,status:'Available'});$('tNumber').value='';$('tPlate').value='';$('tDriver').value='';$('tModel').value='';renderAll();};
+$('addQueue').onclick=()=>{const name=prompt('Driver Name:');if(!name)return;queue.push({name,area:'Project 8',time:new Date().toLocaleTimeString()});renderAll();};
+$('nextQ').onclick=()=>{if(queue.length){queue.shift();renderAll();}else alert('Queue is empty');};
+$('clearQ').onclick=()=>{queue=[];renderAll();};
+$('addAttendance').onclick=()=>{const driver=$('aDriver').value.trim(),status=$('aStatus').value;if(!driver){alert('Enter driver name');return;}attendance.push({date:new Date().toLocaleDateString(),driver,status,time:new Date().toLocaleTimeString()});$('aDriver').value='';renderAll();};
+$('addTrip').onclick=()=>{const driver=$('trDriver').value.trim(),destination=$('trDestination').value.trim(),passenger=$('trPassenger').value.trim(),fare=$('trFare').value.trim();if(!driver||!destination){alert('Fill driver and destination');return;}trips.push({date:new Date().toLocaleDateString(),driver,destination,passenger,fare:fare||50});$('trDriver').value='';$('trDestination').value='';$('trPassenger').value='';$('trFare').value='';renderAll();};
+$('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({date,driver,amount:parseInt(amount),status});$('bDriver').value='';$('bAmount').value='';renderAll();};
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+renderAll();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

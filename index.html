@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TODA QC</title>
+<title>TODA QC - Queue Management & Boundary Remittance System</title>
 <link rel="manifest" href="manifest.json">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
@@ -44,7 +44,8 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div id="loginWrapper" class="login-wrapper">
 <div class="login-card">
 <div class="text-center mb-3"><span style="font-size:44px">🛺</span></div>
-<h5 class="text-center fw-bold">TODA Queue Management</h5>
+<h5 class="text-center fw-bold">TODA Queue Management<br>& Daily Boundary Remittance System</h5>
+<p class="text-center text-muted" style="font-size:10px">Project 8 TODA, Quezon City<br>Web-Based Platform - Thesis Project</p>
 <div class="mt-3">
 <input id="username" class="form-control mb-2" type="text" placeholder="Username" autocomplete="off">
 <input id="password" class="form-control mb-3" type="password" placeholder="Password">
@@ -113,7 +114,7 @@ const loginWrapper=$('loginWrapper'),registerWrapper=$('registerWrapper'),dash=$
 function saveSession(user){
   sessionStorage.setItem('toda_session', JSON.stringify(user));
   sessionStorage.setItem('toda_session_time', Date.now().toString());
-  
+  // Also backup to localStorage for accounts persistence
   try{
     const existing = JSON.parse(localStorage.getItem('toda_users_backup')||'[]');
     const idx = existing.findIndex(u=>u.username===user.username);
@@ -202,7 +203,7 @@ async function loadQueue(){
   const local = localStorage.getItem('toda_queue');
   let localQ = [];
   if(local){ try{ localQ=JSON.parse(local); }catch(e){} }
-  
+  // Use backend if has data, else local
   queue = backendQ.length ? backendQ : localQ;
 }
 async function saveAttendance(){
@@ -253,6 +254,22 @@ async function loadBoundary(){
   }
 }
 function handleLoginEnter(e){ if(e.key==='Enter'){ $('loginBtn').click(); } }
+$('goAdminLogin').onclick=()=>{
+  $('adminUsername').style.display='block';
+  $('adminPassword').style.display='block';
+  $('adminLoginBtn').style.display='block';
+  $('adminUsername').focus();
+  $('goAdminLogin').innerText='Enter Admin Credentials Below ↓';
+};
+function handleAdminEnter(e){ if(e.key==='Enter'){ $('adminLoginBtn').click(); } }
+$('adminUsername').addEventListener('keydown', handleAdminEnter);
+$('adminPassword').addEventListener('keydown', handleAdminEnter);
+$('adminLoginBtn').onclick=async()=>{
+  const u=$('adminUsername').value.trim(), p=$('adminPassword').value.trim();
+  if(!u||!p){ $('adminLoginError').innerText='Enter admin username and password'; $('adminLoginError').style.display='block'; return; }
+  $('username').value=u; $('password').value=p;
+  $('loginBtn').click();
+};
 $('username').addEventListener('keydown', handleLoginEnter);
 $('password').addEventListener('keydown', handleLoginEnter);
 $('regUsername').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
@@ -338,7 +355,7 @@ async function loadUsers(){
     const d=await r.json();
     if(d.success){ backendUsers=d.users; }
   }catch(e){}
-  
+  // Merge with localStorage backup for persistence (Render ephemeral fix)
   let localBackup = [];
   try{
     const b = localStorage.getItem('toda_users_backup');

@@ -112,15 +112,22 @@ let currentUser=null;
 const $=id=>document.getElementById(id);
 const loginWrapper=$('loginWrapper'),registerWrapper=$('registerWrapper'),dash=$('dashboard');
 function saveSession(user){
-  localStorage.setItem('toda_session', JSON.stringify(user));
-  localStorage.setItem('toda_session_time', Date.now().toString());
+  sessionStorage.setItem('toda_session', JSON.stringify(user));
+  sessionStorage.setItem('toda_session_time', Date.now().toString());
+  // Also backup to localStorage for accounts persistence
+  try{
+    const existing = JSON.parse(localStorage.getItem('toda_users_backup')||'[]');
+    const idx = existing.findIndex(u=>u.username===user.username);
+    if(idx>=0) existing[idx]=user;
+    else existing.push(user);
+    localStorage.setItem('toda_users_backup', JSON.stringify(existing));
+  }catch(e){}
 }
 function loadSession(){
   try{
-    const s = localStorage.getItem('toda_session');
-    const t = localStorage.getItem('toda_session_time');
+    const s = sessionStorage.getItem('toda_session');
+    const t = sessionStorage.getItem('toda_session_time');
     if(!s) return null;
-    // Session valid for 24 hours
     if(t && (Date.now() - parseInt(t)) > 24*60*60*1000){
       clearSession();
       return null;
@@ -129,8 +136,8 @@ function loadSession(){
   }catch(e){ return null; }
 }
 function clearSession(){
-  localStorage.removeItem('toda_session');
-  localStorage.removeItem('toda_session_time');
+  sessionStorage.removeItem('toda_session');
+  sessionStorage.removeItem('toda_session_time');
 }
 $('showRegister').onclick=(e)=>{e.preventDefault();loginWrapper.classList.add('hidden');dash.classList.add('hidden');registerWrapper.classList.remove('hidden');};
 $('showLogin').onclick=(e)=>{e.preventDefault();registerWrapper.classList.add('hidden');dash.classList.add('hidden');loginWrapper.classList.remove('hidden');$('username').value='';$('password').value='';$('msg').textContent='';$('regMsg').textContent='';};
@@ -246,6 +253,11 @@ async function loadBoundary(){
     if(local) boundaries=JSON.parse(local);
   }
 }
+function handleLoginEnter(e){ if(e.key==='Enter'){ $('loginBtn').click(); } }
+$('username').addEventListener('keydown', handleLoginEnter);
+$('password').addEventListener('keydown', handleLoginEnter);
+$('regUsername').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
+$('regPassword').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
 $('loginBtn').onclick=async()=>{
   const username=$('username').value.trim(),password=$('password').value.trim();
   if(!username||!password){$('msg').textContent='Please enter username and password';return;}
@@ -321,13 +333,34 @@ $('registerBtn').onclick=async()=>{
   }
 };
 async function loadUsers(){
+  let backendUsers = [];
   try{
     const r=await fetch('/api/users');
     const d=await r.json();
-    if(d.success){ users=d.users; }
+    if(d.success){ backendUsers=d.users; }
   }catch(e){}
+
+  let localBackup = [];
+  try{
+    const b = localStorage.getItem('toda_users_backup');
+    if(b) localBackup = JSON.parse(b);
+  }catch(e){}
+  
+  try{
+    const b2 = localStorage.getItem('toda_users');
+    if(b2) localBackup = [...localBackup, ...JSON.parse(b2)];
+  }catch(e){}
+  // Merge dedupe by username
+  const map = {};
+  [...backendUsers, ...localBackup].forEach(u=>{
+    if(u.username) map[u.username]=u;
+  });
+  users = Object.values(map);
+  if(users.length===0){
+    users=[{username:'admin',name:'Mark Anthony Naguit',role:'admin',status:'Active'}];
+  }
 }
-$('logoutMenu').onclick=()=>{clearSession(); localStorage.removeItem('toda_queue'); localStorage.removeItem('toda_attendance'); localStorage.removeItem('toda_trips'); localStorage.removeItem('toda_boundary'); sessionStorage.clear(); location.reload();};
+$('logoutMenu').onclick=()=>{clearSession(); sessionStorage.clear(); location.reload();};
 document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
   item.onclick=()=>{
     if(item.classList.contains('hidden')) return;
@@ -345,11 +378,11 @@ function renderAll(){
   $('statQueue').textContent=queue.length;
   $('statUsers').textContent=users.length;
   $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You)':''}</span><span class="badge-status bg-queuing">${q.time}</span></div>`).join(''):'<small class="text-muted">No queue yet.</small>';
-  $('queueList').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You - Auto Joined)':''}</span><span class="badge-status bg-queuing">${q.time}</span></div>`).join(''):'<small class="text-muted">No queue. Click Join Queue or login as driver to auto-join.</small>';
+  $('queueList').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You - Auto Joined)':''}</span><div class="d-flex gap-1 align-items-center"><span class="badge-status bg-queuing">${q.time}</span><button class="btn btn-sm btn-light" style="padding:2px 6px" onclick="deleteQueueByUsername('${q.username}')"><i class="bi bi-x-lg"></i></button></div></div>`).join(''):'<small class="text-muted">No queue. Click Join Queue or login as driver to auto-join.</small>';
   $('queueMonitor').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} ${q.name}</span><span class="badge-status bg-queuing">Queuing</span></div>`).join(''):'<small class="text-muted">No drivers in queue.</small>';
-  $('attendanceTable').innerHTML=attendance.length?attendance.map(a=>`<tr><td>${a.date}</td><td>${a.driver} ${a.username?`(${a.username})`:''}</td><td><span class="badge-status ${a.status==='Present'?'bg-active':'bg-inactive'}">${a.status}</span></td><td>${a.time}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted">No attendance records yet. Attendance from all users will show here for admin.</td></tr>';
-  $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td></tr>`).join('');
-  $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td></tr>`).join('');
+  $('attendanceTable').innerHTML=attendance.length?attendance.map(a=>`<tr><td>${a.date}</td><td>${a.driver} ${a.username?`(${a.username})`:''}</td><td><span class="badge-status ${a.status==='Present'?'bg-active':'bg-inactive'}">${a.status}</span></td><td>${a.time}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteAttendance(${a.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join(''):'<tr><td colspan="5" class="text-center text-muted">No attendance records yet. Attendance from all users will show here for admin.</td></tr>';
+  $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteTrip(${t.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
+  $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteBoundary(${b.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
   $('incomeTable').innerHTML=boundaries.length?boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td>${b.status}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted">No records yet.</td></tr>';
   $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td></tr>`).join('');
 }
@@ -371,18 +404,43 @@ $('clearQ').onclick=()=>{queue=[];saveQueue();renderAll();};
 $('addAttendance').onclick=()=>{
   const driver=$('aDriver').value.trim()||(currentUser?currentUser.name:'');
   const status=$('aStatus').value;
+  const today = new Date().toLocaleDateString();
+  const username = currentUser?currentUser.username:'';
   if(!driver){alert('Enter driver name');return;}
-  attendance.push({date:new Date().toLocaleDateString(),driver,status,time:new Date().toLocaleTimeString(),username:currentUser?currentUser.username:'',createdBy:currentUser?currentUser.username:''});
+  // Check duplicate - same user same date
+  const duplicate = attendance.find(a=> a.date===today && (a.username===username || a.driver===driver));
+  if(duplicate){ alert('You already recorded attendance today - '+today); return; }
+  attendance.push({id: Date.now(), date:today, driver, status, time:new Date().toLocaleTimeString(), username:username, createdBy:username});
   saveAttendance(); $('aDriver').value=currentUser?currentUser.name:''; renderAll();
 };
+function deleteAttendance(id){
+  if(!confirm('Delete this attendance record?')) return;
+  attendance = attendance.filter(a=> a.id!==id);
+  saveAttendance(); renderAll();
+}
+function deleteQueueByUsername(username){
+  if(!confirm('Remove from queue?')) return;
+  queue = queue.filter(q=> q.username!==username);
+  saveQueue(); renderAll();
+}
+function deleteTrip(id){
+  if(!confirm('Delete this trip?')) return;
+  trips = trips.filter(t=> t.id!==id);
+  saveTrips(); renderAll();
+}
+function deleteBoundary(id){
+  if(!confirm('Delete this boundary record?')) return;
+  boundaries = boundaries.filter(b=> b.id!==id);
+  saveBoundary(); renderAll();
+}
 $('addTrip').onclick=()=>{
   const driver=$('trDriver').value.trim()||(currentUser?currentUser.name:'');
   const destination=$('trDestination').value.trim(),passenger=$('trPassenger').value.trim(),fare=$('trFare').value.trim();
   if(!driver||!destination){alert('Fill driver and destination');return;}
-  trips.push({date:new Date().toLocaleDateString(),driver,destination,passenger,fare:fare||50,username:currentUser?currentUser.username:''});
+  trips.push({id: Date.now(), date:new Date().toLocaleDateString(),driver,destination,passenger,fare:fare||50,username:currentUser?currentUser.username:''});
   saveTrips(); $('trDestination').value='';$('trPassenger').value='';$('trFare').value=''; renderAll();
 };
-$('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({date,driver,amount:parseInt(amount),status}); saveBoundary(); $('bDriver').value='';$('bAmount').value='';renderAll();};
+$('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({id: Date.now(), date,driver,amount:parseInt(amount),status,username:currentUser?currentUser.username:''}); saveBoundary(); $('bDriver').value='';$('bAmount').value='';renderAll();};
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 renderAll();
 </script>

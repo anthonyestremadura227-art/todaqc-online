@@ -8,36 +8,132 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-:root{--primary:#1e3a8a;--secondary:#2563eb;--dark:#111827}
-body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
-.hidden{display:none !important}
-.login-wrapper{background:linear-gradient(135deg,var(--primary),var(--secondary));min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.login-card{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.25);width:100%;max-width:420px;padding:32px}
-.dashboard{display:flex;min-height:100vh}
-.sidebar{width:260px;background:var(--dark);color:#fff;padding:20px;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto}
-.nav-menu{margin-top:24px;display:flex;flex-direction:column;gap:4px;flex:1}
-.nav-item{padding:10px 14px;border-radius:10px;font-size:13px;cursor:pointer;display:flex;gap:10px;align-items:center}
-.nav-item:hover{background:#1f2937}
-.nav-item.active{background:#1f2937;border-left:3px solid var(--secondary)}
-.main-content{margin-left:260px;flex:1;padding:24px}
-.topbar{background:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.stat-card{background:#fff;border-radius:16px;padding:18px;border:1px solid #e5e7eb}
-.stat-value{font-size:28px;font-weight:800}
-.stat-label{font-size:11px;color:#6b7280;text-transform:uppercase}
-.content-card{background:#fff;border-radius:16px;padding:18px;border:1px solid #e5e7eb;margin-bottom:16px}
-.badge-status{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700}
-.bg-available{background:#dcfce7;color:#166534}
-.bg-pending{background:#fef9c3;color:#854d0e}
-.bg-active{background:#dcfce7;color:#166534}
-.bg-inactive{background:#fee2e2;color:#991b1b}
-.bg-queuing{background:#dbeafe;color:#1e40af}
-.table{font-size:12px}
-.table th{font-size:10px;text-transform:uppercase;color:#6b7280;background:#f8fafc}
-.form-control,.form-select{font-size:12px;padding:10px 12px;border-radius:10px}
-.btn{font-size:12px;padding:10px 16px;border-radius:10px;font-weight:600}
-.queue-card{border:2px solid #2563eb;background:#eff6ff}
-.my-queue{border-left:4px solid #16a34a;background:#f0fdf4}
-@media(max-width:900px){.sidebar{width:100%;height:auto;position:relative}.main-content{margin-left:0}.dashboard{flex-direction:column}}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700&display=swap');
+:root{
+  --primary:#0f172a; --primary-2:#1e293b; --accent:#3b82f6; --accent-2:#60a5fa;
+  --bg:#f1f5f9; --card:#ffffff; --muted:#64748b; --border:#e2e8f0;
+  --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+}
+*{font-family:'Inter',system-ui,sans-serif}
+body{background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);min-height:100vh;margin:0}
+.sidebar{
+  background:linear-gradient(180deg,#0f172a 0%,#1e293b 100%);
+  width:270px;min-height:100vh;position:fixed;left:0;top:0;
+  padding:18px 14px;z-index:10;box-shadow:4px 0 24px rgba(15,23,42,0.15);
+  border-right:1px solid rgba(255,255,255,0.06)
+}
+.logo{
+  display:flex;align-items:center;gap:10px;padding:10px 8px 16px 8px;
+  border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:12px
+}
+.logo-icon{
+  width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#60a5fa);
+  display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:16px;box-shadow:0 4px 12px rgba(59,130,246,0.3)
+}
+.logo-text{color:white}
+.logo-text b{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;letter-spacing:-0.2px}
+.logo-text span{font-size:10px;color:#94a3b8}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;margin:4px 0;
+  border-radius:10px;color:#94a3b8;font-size:13px;font-weight:500;cursor:pointer;
+  transition:all 0.2s ease;position:relative
+}
+.nav-item i{font-size:15px;width:20px;text-align:center}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#e2e8f0;transform:translateX(2px)}
+.nav-item.active{
+  background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;
+  box-shadow:0 4px 12px rgba(59,130,246,0.35);font-weight:600
+}
+.nav-item.active::after{
+  content:'';position:absolute;right:-14px;top:50%;transform:translateY(-50%);
+  width:3px;height:20px;background:#3b82f6;border-radius:2px 0 0 2px
+}
+.user-badge{
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:10px 12px;margin-top:12px;color:#cbd5e1;font-size:11px
+}
+.main{margin-left:270px;padding:20px 22px}
+.topbar{
+  background:rgba(255,255,255,0.9);backdrop-filter:blur(12px);
+  border:1px solid var(--border);border-radius:14px;padding:14px 18px;
+  display:flex;justify-content:space-between;align-items:center;
+  box-shadow:0 1px 3px rgba(15,23,42,0.05),0 4px 12px rgba(15,23,42,0.03);
+  margin-bottom:18px;position:sticky;top:14px;z-index:5
+}
+.page{display:block}
+.page.hidden{display:none !important}
+.content-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:18px;box-shadow:0 1px 3px rgba(15,23,42,0.04),0 4px 16px rgba(15,23,42,0.04);
+  margin-bottom:16px;transition:all 0.2s ease
+}
+.content-card:hover{box-shadow:0 4px 12px rgba(15,23,42,0.06),0 8px 24px rgba(15,23,42,0.06)}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:16px;box-shadow:0 1px 3px rgba(15,23,42,0.04);
+  transition:all 0.2s ease;position:relative;overflow:hidden
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));opacity:0.8
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,23,42,0.08)}
+.stat-card h2{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.5px}
+.btn-dark{
+  background:linear-gradient(135deg,#0f172a,#1e293b);border:none;border-radius:10px;
+  padding:10px 16px;font-weight:600;box-shadow:0 2px 8px rgba(15,23,42,0.2);
+  transition:all 0.2s ease
+}
+.btn-dark:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,23,42,0.3);background:linear-gradient(135deg,#1e293b,#334155)}
+.queue-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 14px;border:1px solid var(--border);border-radius:12px;
+  margin-bottom:8px;background:linear-gradient(180deg,#ffffff,#f8fafc);
+  transition:all 0.2s ease;position:relative
+}
+.queue-item:hover{transform:translateX(2px);box-shadow:0 2px 8px rgba(15,23,42,0.06);border-color:#cbd5e1}
+.queue-item.you{
+  background:linear-gradient(135deg,#ecfdf5,#d1fae5);border-color:#a7f3d0;
+  box-shadow:0 2px 8px rgba(16,185,129,0.15)
+}
+.badge-queuing{
+  background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1d4ed8;
+  border:1px solid #bfdbfe;font-weight:600;font-size:10px;padding:4px 8px;border-radius:20px
+}
+.badge-status{font-size:10px;padding:4px 8px;border-radius:20px;font-weight:600}
+.bg-active{background:linear-gradient(135deg,#dcfce7,#bbf7d0);color:#166534;border:1px solid #bbf7d0}
+.bg-pending{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border:1px solid #fde68a}
+.bg-inactive{background:linear-gradient(135deg,#fee2e2,#fecaca);color:#991b1b;border:1px solid #fecaca}
+.table thead th{
+  font-size:10px;font-weight:700;letter-spacing:0.6px;color:#64748b;
+  text-transform:uppercase;border-bottom:2px solid #e2e8f0;padding:10px 12px
+}
+.table tbody td{font-size:12px;padding:10px 12px;vertical-align:middle}
+.table-hover tbody tr:hover{background:#f8fafc}
+.login-wrapper{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(1200px 600px at 20% -10%,#dbeafe 0%,transparent 60%),
+             radial-gradient(1000px 500px at 80% 110%,#bfdbfe 0%,transparent 60%),
+             linear-gradient(180deg,#f8fafc,#f1f5f9);
+  padding:20px
+}
+.login-card{
+  background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);
+  border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 10px 30px rgba(15,23,42,0.08),0 1px 3px rgba(15,23,42,0.04);
+  padding:28px;max-width:460px;width:100%
+}
+.form-control, .form-select{
+  border-radius:10px;border:1px solid #e2e8f0;padding:10px 12px;font-size:13px;
+  transition:all 0.2s ease;background:#ffffff
+}
+.form-control:focus, .form-select:focus{
+  border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,0.15);outline:none
+}
+.admin-only-menu{display:flex !important}
+.kpi-icon{
+  width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin-bottom:8px
+}
 </style>
 </head>
 <body>
@@ -88,7 +184,7 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 </div>
 </div>
 <div class="main-content">
-<div class="topbar"><div><div class="fw-bold" style="font-size:15px" id="pageTitle">Overview Dashboard</div><div style="font-size:11px;color:#6b7280" id="subTitle">TODA QC - Project 8</div></div><div style="font-size:10px;color:#6b7280" id="dateNow"></div></div>
+<div class="topbar"><div><div class="fw-bold" style="font-size:15px" id="pageTitle">Overview Dashboard</div><div style="font-size:11px;color:#6b7280" id="subTitle">TODA QC - Project 8 - Driver Queue Only - Admin Manages</div></div><div style="font-size:10px;color:#64748b;background:#f1f5f9;border:1px solid #e2e8f0;padding:4px 8px;border-radius:20px" id="dateNow"></div></div>
 <div id="page-overview" class="page">
 <div class="row g-3 mb-3">
 <div class="col-md-4"><div class="stat-card"><div class="stat-label">Total Drivers</div><div class="stat-value" id="statTotal">0</div><div class="stat-label">Registered</div></div></div>
@@ -421,6 +517,8 @@ function renderAll(){
   if($('statQueue')) $('statQueue').textContent=queue.length;
   if($('statUsers')) $('statUsers').textContent=users.length;
   if($('overviewQueue')) $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>{ const name=q.name||q.username||'Unknown'; const time=q.time||''; return `<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue':''}"><span style="font-size:11px">#${i+1} - ${name} ${currentUser&&q.username===currentUser.username?'(You)':''}</span><span class="badge-status bg-queuing">${time||'Queuing'}</span></div>`; }).join(''):'<small class="text-muted">No queue yet.</small>';
+    // Filter admins before rendering
+  queue = queue.filter(q=>{ const u = users.find(us=> us.username===q.username); if(u && u.role!=='driver') return false; if(['admin','adminmark','secretadmin','adminbea','secretarybea'].includes(q.username)) return false; return true; });
   if($('queueList')) $('queueList').innerHTML=queue.length?queue.map((q,i)=>{ 
   const name=q.name||q.username||'Unknown'; 
   const time=q.time||''; 
@@ -630,7 +728,68 @@ if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(regs=>{ regs.forEach(r=>r.unregister()); });
 }
 renderAll();
+if($('nextQueue')) $('nextQueue').onclick=()=>{
+  if(currentUser?.role!=='admin'){ alert('Admin only - Next queue'); return; }
+  if(queue.length===0){ alert('Queue empty - No drivers in pila'); return; }
+  if(!confirm('Next - Remove #1 driver from pila? - '+queue[0].name+' will be removed - driver only')) return;
+  queue.shift();
+  saveQueue();
+  renderAll();
+  alert('Next driver removed - '+queue.length+' drivers remaining in pila');
+};
+if($('arrangeQueue')) $('arrangeQueue').onclick=()=>{
+  if(currentUser?.role!=='admin'){ alert('Admin only - Arrange queue'); return; }
+  const order = prompt('Arrange queue - Enter usernames in order separated by comma - Example: jom,lucky - Current: '+queue.map(q=>q.username).join(','));
+  if(!order) return;
+  const usernames = order.split(',').map(s=>s.trim()).filter(Boolean);
+  const newQueue = [];
+  usernames.forEach(un=>{
+    const found = queue.find(q=> q.username===un);
+    if(found) newQueue.push(found);
+  });
+  // Add remaining not in list
+  queue.forEach(q=>{
+    if(!newQueue.find(n=> n.username===q.username)) newQueue.push(q);
+  });
+  queue = newQueue;
+  saveQueue();
+  renderAll();
+  alert('Queue arranged - New order: '+queue.map((q,i)=>`#${i+1} ${q.name}`).join(', '));
+};
+if($('clearQueue'))
+if($('clearQueue'))
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+if($('nextQueue')) $('nextQueue').onclick=()=>{
+  if(currentUser?.role!=='admin'){ alert('Admin only - Next queue'); return; }
+  if(queue.length===0){ alert('Queue empty - No drivers in pila'); return; }
+  if(!confirm('Next - Remove #1 driver from pila? - '+queue[0].name+' will be removed - driver only')) return;
+  queue.shift();
+  saveQueue();
+  renderAll();
+  alert('Next driver removed - '+queue.length+' drivers remaining in pila');
+};
+if($('arrangeQueue')) $('arrangeQueue').onclick=()=>{
+  if(currentUser?.role!=='admin'){ alert('Admin only - Arrange queue'); return; }
+  const order = prompt('Arrange queue - Enter usernames in order separated by comma - Example: jom,lucky - Current: '+queue.map(q=>q.username).join(','));
+  if(!order) return;
+  const usernames = order.split(',').map(s=>s.trim()).filter(Boolean);
+  const newQueue = [];
+  usernames.forEach(un=>{
+    const found = queue.find(q=> q.username===un);
+    if(found) newQueue.push(found);
+  });
+  // Add remaining not in list
+  queue.forEach(q=>{
+    if(!newQueue.find(n=> n.username===q.username)) newQueue.push(q);
+  });
+  queue = newQueue;
+  saveQueue();
+  renderAll();
+  alert('Queue arranged - New order: '+queue.map((q,i)=>`#${i+1} ${q.name}`).join(', '));
+};
+if($('clearQueue'))
+if($('clearQueue'))
+</script>
 </body>
 </html>

@@ -45,9 +45,10 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div class="login-card">
 <div class="text-center mb-3"><span style="font-size:44px">🛺</span></div>
 <h5 class="text-center fw-bold">TODA Queue Management</h5>
+<p class="text-center text-muted" style="font-size:10px">Project 8 TODA, Quezon City<br>Web-Based Platform - Thesis Project</p>
 <div class="mt-3">
 <input id="username" class="form-control mb-2" type="text" placeholder="Username" autocomplete="off">
-<input id="password" class="form-control mb-3" type="password" placeholder="Password">
+<input id="password" class="form-control mb-3" type="password" placeholder="Password" autocomplete="new-password">
 <button id="loginBtn" class="btn btn-dark w-100">Login</button>
 <div class="text-center mt-3"><a href="#" id="showRegister" style="font-size:11px;text-decoration:none">Don't have an account? Create account</a></div>
 <div id="msg" class="text-center mt-2" style="font-size:11px;color:#dc2626;min-height:16px"></div>
@@ -98,9 +99,9 @@ body{background:#f1f5f9;font-family:'Inter',system-ui,sans-serif}
 <div class="col-md-5"><div class="content-card"><h6><i class="bi bi-eye"></i> Queue Monitoring</h6><div id="queueMonitor"></div></div></div>
 </div>
 </div>
-<div id="page-attendance" class="page hidden"><div class="content-card"><h6><i class="bi bi-calendar-check"></i> Attendance</h6><div class="row g-2 mb-3"><div class="col-md-8"><input id="aDriver" class="form-control" placeholder="Driver Name - Auto-filled"></div><div class="col-md-4"><select id="aStatus" class="form-select"><option>Present</option><option>Absent</option></select></div></div><button id="addAttendance" class="btn btn-dark">Record Attendance</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Status</th><th>Time</th></tr></thead><tbody id="attendanceTable"></tbody></table></div></div></div>
-<div id="page-trips" class="page hidden"><div class="content-card"><h6><i class="bi bi-signpost-split"></i> Trip History</h6><div class="row g-2 mb-3"><div class="col-md-6"><input id="trDriver" class="form-control" placeholder="Driver - Auto-filled"></div><div class="col-md-6"><input id="trDestination" class="form-control" placeholder="Destination"></div><div class="col-md-6"><input id="trPassenger" class="form-control" placeholder="Passenger"></div><div class="col-md-6"><input id="trFare" class="form-control" type="number" placeholder="Fare"></div></div><button id="addTrip" class="btn btn-dark">Record Trip</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Destination</th><th>Passenger</th><th>Fare</th></tr></thead><tbody id="tripTable"></tbody></table></div></div></div>
-<div id="page-boundary" class="page hidden"><div class="content-card"><h6><i class="bi bi-cash-stack"></i> Daily Boundary Remittance</h6><div class="row g-2 mb-3"><div class="col-md-4"><input id="bDriver" class="form-control" placeholder="Driver"></div><div class="col-md-3"><input id="bAmount" class="form-control" type="number" placeholder="Amount"></div><div class="col-md-3"><input id="bDate" class="form-control" type="date"></div><div class="col-md-2"><select id="bStatus" class="form-select"><option>Paid</option><option>Unpaid</option><option>Partial</option></select></div></div><button id="addBoundary" class="btn btn-dark">Record Boundary</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th></tr></thead><tbody id="boundaryTable"></tbody></table></div></div></div>
+<div id="page-attendance" class="page hidden"><div class="content-card"><h6><i class="bi bi-calendar-check"></i> Attendance</h6><div class="row g-2 mb-3"><div class="col-md-8"><input id="aDriver" class="form-control" placeholder="Driver Name - Auto-filled"></div><div class="col-md-4"><select id="aStatus" class="form-select"><option>Present</option><option>Absent</option></select></div></div><button id="addAttendance" class="btn btn-dark">Record Attendance</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Status</th><th>Time</th><th>Action</th></tr></thead><tbody id="attendanceTable"></tbody></table></div></div></div>
+<div id="page-trips" class="page hidden"><div class="content-card"><h6><i class="bi bi-signpost-split"></i> Trip History</h6><div class="row g-2 mb-3"><div class="col-md-6"><input id="trDriver" class="form-control" placeholder="Driver - Auto-filled"></div><div class="col-md-6"><input id="trDestination" class="form-control" placeholder="Destination"></div><div class="col-md-6"><input id="trPassenger" class="form-control" placeholder="Passenger"></div><div class="col-md-6"><input id="trFare" class="form-control" type="number" placeholder="Fare"></div></div><button id="addTrip" class="btn btn-dark">Record Trip</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Destination</th><th>Passenger</th><th>Fare</th><th>Action</th></tr></thead><tbody id="tripTable"></tbody></table></div></div></div>
+<div id="page-boundary" class="page hidden"><div class="content-card"><h6><i class="bi bi-cash-stack"></i> Daily Boundary Remittance</h6><div class="row g-2 mb-3"><div class="col-md-4"><input id="bDriver" class="form-control" placeholder="Driver"></div><div class="col-md-3"><input id="bAmount" class="form-control" type="number" placeholder="Amount"></div><div class="col-md-3"><input id="bDate" class="form-control" type="date"></div><div class="col-md-2"><select id="bStatus" class="form-select"><option>Paid</option><option>Unpaid</option><option>Partial</option></select></div></div><button id="addBoundary" class="btn btn-dark">Record Boundary</button><div class="table-responsive mt-3"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody id="boundaryTable"></tbody></table></div></div></div>
 <div id="page-income" class="page hidden"><div class="content-card"><h6><i class="bi bi-graph-up"></i> Income Reports</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Date</th><th>Driver</th><th>Amount</th><th>Status</th></tr></thead><tbody id="incomeTable"></tbody></table></div></div></div>
 <div id="page-users" class="page hidden"><div class="content-card"><h6><i class="bi bi-person-gear"></i> User Management</h6><div class="table-responsive"><table class="table table-hover"><thead><tr><th>Username</th><th>Name</th><th>Role</th><th>Status</th></tr></thead><tbody id="userTable"></tbody></table></div></div></div>
 </div>
@@ -110,10 +111,15 @@ let queue=[],attendance=[],trips=[],boundaries=[],users=[];
 let currentUser=null;
 const $=id=>document.getElementById(id);
 const loginWrapper=$('loginWrapper'),registerWrapper=$('registerWrapper'),dash=$('dashboard');
+// ADMIN ACCOUNTS - EDIT HERE - PWEDE MO PALITAN - TODA QC LANG
+const ADMIN_ACCOUNTS = [
+  { username: 'admin', password: 'smoker123', name: 'Mark Anthony Naguit', role: 'admin', status: 'Active' },
+  { username: 'adminmark', password: 'admin123', name: 'Mark Anthony Naguit - AdminMark', role: 'admin', status: 'Active' },
+  { username: 'secretadmin', password: 'toda2024', name: 'Secret Admin', role: 'admin', status: 'Active' }
+];
 function saveSession(user){
   sessionStorage.setItem('toda_session', JSON.stringify(user));
   sessionStorage.setItem('toda_session_time', Date.now().toString());
-  // Also backup to localStorage for accounts persistence
   try{
     const existing = JSON.parse(localStorage.getItem('toda_users_backup')||'[]');
     const idx = existing.findIndex(u=>u.username===user.username);
@@ -149,7 +155,7 @@ window.addEventListener('DOMContentLoaded', async()=>{
     applyRoleVisibility(saved.role);
     await Promise.all([loadUsers(), loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
     autoFillDriverFields();
-    if(saved.role==='driver'){ autoJoinQueue(); }
+    if(saved.role==='driver'||saved.role==='admin'){ autoJoinQueue(); }
     renderAll();
   }
 });
@@ -171,7 +177,6 @@ function autoFillDriverFields(){
   if($('aDriver')) $('aDriver').value = name;
   if($('trDriver')) $('trDriver').value = name;
   if($('bDriver')) $('bDriver').value = name;
-  if($('tDriver')) $('tDriver').value = name;
 }
 function autoJoinQueue(){
   if(!currentUser) return;
@@ -183,42 +188,46 @@ function autoJoinQueue(){
     queue.push(newEntry);
     saveQueue();
     renderAll();
-    $('myQueueStatus').innerHTML=`<div class="alert alert-success p-2" style="font-size:11px"><i class="bi bi-check-circle"></i> You are now in queue - Position #${queue.length} - ${name}</div>`;
+    const el=$('myQueueStatus');
+    if(el) el.innerHTML=`<div class="alert alert-success p-2" style="font-size:11px"><i class="bi bi-check-circle"></i> You are now in queue - Position #${queue.length} - ${name}</div>`;
   } else {
     const pos = queue.findIndex(q=>q.username===currentUser.username || q.name===name)+1;
-    $('myQueueStatus').innerHTML=`<div class="alert alert-info p-2" style="font-size:11px"><i class="bi bi-info-circle"></i> You are in queue - Position #${pos}</div>`;
+    const el=$('myQueueStatus');
+    if(el) el.innerHTML=`<div class="alert alert-info p-2" style="font-size:11px"><i class="bi bi-info-circle"></i> You are in queue - Position #${pos}</div>`;
   }
 }
 async function saveQueue(){
   try{ await fetch('/api/queue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({queue})}); }catch(e){ localStorage.setItem('toda_queue', JSON.stringify(queue)); }
+  localStorage.setItem('toda_queue', JSON.stringify(queue));
 }
 async function loadQueue(){
   let backendQ = [];
   try{
     const r=await fetch('/api/queue');
     const d=await r.json();
-    if(d.success){ backendQ=d.queue; }
+    if(d.success && d.queue){ backendQ=d.queue; }
+    else if(d.success && d.data){ backendQ=d.data; }
   }catch(e){}
   const local = localStorage.getItem('toda_queue');
   let localQ = [];
   if(local){ try{ localQ=JSON.parse(local); }catch(e){} }
-  // Use backend if has data, else local
   queue = backendQ.length ? backendQ : localQ;
 }
 async function saveAttendance(){
-  try{ await fetch('/api/attendance',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({attendance})}); }catch(e){ localStorage.setItem('toda_attendance', JSON.stringify(attendance)); }
+  try{ await fetch('/api/attendance',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({attendance})}); }catch(e){}
+  localStorage.setItem('toda_attendance', JSON.stringify(attendance));
 }
 async function loadAttendance(){
   let backendAtt = [];
   try{
     const r=await fetch('/api/attendance');
     const d=await r.json();
-    if(d.success){ backendAtt=d.attendance; }
+    if(d.success && d.attendance){ backendAtt=d.attendance; }
+    else if(d.success && d.data){ backendAtt=d.data; }
   }catch(e){}
   const local = localStorage.getItem('toda_attendance');
   let localAtt = [];
   if(local){ try{ localAtt=JSON.parse(local); }catch(e){} }
-  // Merge - backend + local, dedupe by date+driver+time
   const merged = [...backendAtt];
   localAtt.forEach(la=>{
     const exists = merged.find(ma=> ma.date===la.date && ma.driver===la.driver && ma.time===la.time);
@@ -227,152 +236,54 @@ async function loadAttendance(){
   attendance = merged;
 }
 async function saveTrips(){
-  try{ await fetch('/api/trips',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trips})}); }catch(e){ localStorage.setItem('toda_trips', JSON.stringify(trips)); }
+  try{ await fetch('/api/trips',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({trips})}); }catch(e){}
+  localStorage.setItem('toda_trips', JSON.stringify(trips));
 }
 async function loadTrips(){
   try{
     const r=await fetch('/api/trips');
     const d=await r.json();
-    if(d.success){ trips=d.trips; }
+    if(d.success && d.trips) trips=d.trips;
+    else if(d.success && d.data) trips=d.data;
   }catch(e){
     const local = localStorage.getItem('toda_trips');
     if(local) trips=JSON.parse(local);
   }
 }
 async function saveBoundary(){
-  try{ await fetch('/api/boundary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({boundaries})}); }catch(e){ localStorage.setItem('toda_boundary', JSON.stringify(boundaries)); }
+  try{ await fetch('/api/boundary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({boundaries})}); }catch(e){}
+  localStorage.setItem('toda_boundary', JSON.stringify(boundaries));
 }
 async function loadBoundary(){
   try{
     const r=await fetch('/api/boundary');
     const d=await r.json();
-    if(d.success){ boundaries=d.boundaries; }
+    if(d.success && d.boundaries) boundaries=d.boundaries;
+    else if(d.success && d.data) boundaries=d.data;
   }catch(e){
     const local = localStorage.getItem('toda_boundary');
     if(local) boundaries=JSON.parse(local);
   }
 }
-function handleLoginEnter(e){ if(e.key==='Enter'){ $('loginBtn').click(); } }
-$('goAdminLogin').onclick=()=>{
-  $('adminUsername').style.display='block';
-  $('adminPassword').style.display='block';
-  $('adminLoginBtn').style.display='block';
-  $('adminUsername').focus();
-  $('goAdminLogin').innerText='Enter Admin Credentials Below ↓';
-};
-function handleAdminEnter(e){ if(e.key==='Enter'){ $('adminLoginBtn').click(); } }
-$('adminUsername').addEventListener('keydown', handleAdminEnter);
-$('adminPassword').addEventListener('keydown', handleAdminEnter);
-$('adminLoginBtn').onclick=async()=>{
-  const u=$('adminUsername').value.trim(), p=$('adminPassword').value.trim();
-  if(!u||!p){ $('adminLoginError').innerText='Enter admin username and password'; $('adminLoginError').style.display='block'; return; }
-  $('username').value=u; $('password').value=p;
-  $('loginBtn').click();
-};
-$('username').addEventListener('keydown', handleLoginEnter);
-$('password').addEventListener('keydown', handleLoginEnter);
-$('regUsername').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
-$('regPassword').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
-$('loginBtn').onclick=async()=>{
-  const username=$('username').value.trim(),password=$('password').value.trim();
-  if(!username||!password){$('msg').textContent='Please enter username and password';return;}
-  $('msg').textContent='Authenticating...';
-  try{
-    const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
-    const d=await r.json();
-    if(d.success){
-      currentUser=d.user;
-      if(currentUser.status!=='Active'){
-        currentUser.status='Active';
-        try{await fetch('/api/activate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});}catch(e){}
-      }
-      $('userInfo').textContent=`${d.user.role} | ${d.user.name} | ${d.user.username} | ${currentUser.status}`;
-      saveSession(currentUser);
-      loginWrapper.classList.add('hidden');registerWrapper.classList.add('hidden');dash.classList.remove('hidden');
-      applyRoleVisibility(d.user.role);
-      await Promise.all([loadUsers(), loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
-      autoFillDriverFields();
-      if(d.user.role==='driver'){ autoJoinQueue(); }
-      renderAll();
-      $('msg').textContent='';
-    } else {
-      $('msg').textContent=d.message;
-    }
-  }catch(e){
-    if(username==='admin'&&password==='smoker123'){
-      currentUser={username:'admin',role:'admin',name:'Mark Anthony Naguit',status:'Active'};
-      $('userInfo').textContent=`admin | Mark Anthony Naguit | admin | Active`;
-      saveSession(currentUser);
-      loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
-      applyRoleVisibility('admin');
-      await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
-      renderAll();
-    } else {
-      const found=users.find(u=>u.username===username&&u.password===password);
-      if(found){
-        currentUser=found;currentUser.status='Active';
-        $('userInfo').textContent=`${found.role} | ${found.name} | ${found.username} | Active`;
-        saveSession(currentUser);
-        loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
-        applyRoleVisibility(found.role);
-        await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
-        autoFillDriverFields();
-        if(found.role==='driver'){ autoJoinQueue(); }
-        renderAll();
-      } else {
-        $('msg').textContent='Invalid username or password';
-      }
-    }
-  }
-};
-$('registerBtn').onclick=async()=>{
-  const name=$('regName').value.trim(),username=$('regUsername').value.trim(),password=$('regPassword').value.trim(),role=$('regRole').value;
-  if(!name||!username||!password){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Please fill all fields';return;}
-  if(username.length<3){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Username must be at least 3 characters';return;}
-  if(password.length<6){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Password must be at least 6 characters';return;}
-  $('regMsg').style.color='#6b7280';$('regMsg').textContent='Creating account...';
-  try{
-    const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,username,password,role})});
-    const d=await r.json();
-    if(d.success){
-      $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created - You can now login: '+d.user.username;
-      $('regName').value='';$('regUsername').value='';$('regPassword').value='';
-      setTimeout(()=>{$('showLogin').click();$('username').value=d.user.username;},1200);
-    }else{$('regMsg').style.color='#dc2626';$('regMsg').textContent=d.message;}
-  }catch(e){
-    if(users.find(u=>u.username===username)){ $('regMsg').style.color='#dc2626';$('regMsg').textContent='Username already exists'; return; }
-    users.push({username,name,role,password,status:'Pending'});
-    $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created (local) - You can now login: '+username;
-    $('regName').value='';$('regUsername').value='';$('regPassword').value='';
-    setTimeout(()=>{$('showLogin').click();$('username').value=username;},1200);
-  }
-};
 async function loadUsers(){
   let backendUsers = [];
   try{
     const r=await fetch('/api/users');
     const d=await r.json();
-    if(d.success){ backendUsers=d.users; }
+    if(d.success && d.users){ backendUsers=d.users; }
   }catch(e){}
-  // Merge with localStorage backup for persistence (Render ephemeral fix)
   let localBackup = [];
   try{
     const b = localStorage.getItem('toda_users_backup');
     if(b) localBackup = JSON.parse(b);
   }catch(e){}
-  // Also check users.json backup
-  try{
-    const b2 = localStorage.getItem('toda_users');
-    if(b2) localBackup = [...localBackup, ...JSON.parse(b2)];
-  }catch(e){}
-  // Merge dedupe by username
   const map = {};
-  [...backendUsers, ...localBackup].forEach(u=>{
+  [...ADMIN_ACCOUNTS, ...backendUsers, ...localBackup].forEach(u=>{
     if(u.username) map[u.username]=u;
   });
   users = Object.values(map);
   if(users.length===0){
-    users=[{username:'admin',name:'Mark Anthony Naguit',role:'admin',status:'Active'}];
+    users=ADMIN_ACCOUNTS;
   }
 }
 $('logoutMenu').onclick=()=>{clearSession(); sessionStorage.clear(); location.reload();};
@@ -387,50 +298,54 @@ document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
     $('pageTitle').textContent=item.textContent.trim();
   };
 });
-$('dateNow').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+if($('dateNow')) $('dateNow').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 function renderAll(){
-  $('statTotal').textContent=users.filter(u=>u.role==='driver').length;
-  $('statQueue').textContent=queue.length;
-  $('statUsers').textContent=users.length;
-  $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You)':''}</span><span class="badge-status bg-queuing">${q.time}</span></div>`).join(''):'<small class="text-muted">No queue yet.</small>';
-  $('queueList').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You - Auto Joined)':''}</span><div class="d-flex gap-1 align-items-center"><span class="badge-status bg-queuing">${q.time}</span><button class="btn btn-sm btn-light" style="padding:2px 6px" onclick="deleteQueueByUsername('${q.username}')"><i class="bi bi-x-lg"></i></button></div></div>`).join(''):'<small class="text-muted">No queue. Click Join Queue or login as driver to auto-join.</small>';
-  $('queueMonitor').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} ${q.name}</span><span class="badge-status bg-queuing">Queuing</span></div>`).join(''):'<small class="text-muted">No drivers in queue.</small>';
-  $('attendanceTable').innerHTML=attendance.length?attendance.map(a=>`<tr><td>${a.date}</td><td>${a.driver} ${a.username?`(${a.username})`:''}</td><td><span class="badge-status ${a.status==='Present'?'bg-active':'bg-inactive'}">${a.status}</span></td><td>${a.time}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteAttendance(${a.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join(''):'<tr><td colspan="5" class="text-center text-muted">No attendance records yet. Attendance from all users will show here for admin.</td></tr>';
-  $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteTrip(${t.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
-  $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteBoundary(${b.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
-  $('incomeTable').innerHTML=boundaries.length?boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td>${b.status}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted">No records yet.</td></tr>';
-  $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td></tr>`).join('');
+  if($('statTotal')) $('statTotal').textContent=users.filter(u=>u.role==='driver').length;
+  if($('statQueue')) $('statQueue').textContent=queue.length;
+  if($('statUsers')) $('statUsers').textContent=users.length;
+  if($('overviewQueue')) $('overviewQueue').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You)':''}</span><span class="badge-status bg-queuing">${q.time}</span></div>`).join(''):'<small class="text-muted">No queue yet.</small>';
+  if($('queueList')) $('queueList').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1 ${currentUser&&q.username===currentUser.username?'my-queue queue-card':''}"><span style="font-size:11px">#${i+1} - ${q.name} ${currentUser&&q.username===currentUser.username?'(You - Auto Joined)':''}</span><div class="d-flex gap-1 align-items-center"><span class="badge-status bg-queuing">${q.time}</span><button class="btn btn-sm btn-light" style="padding:2px 6px" onclick="deleteQueueByUsername('${q.username}')"><i class="bi bi-x-lg"></i></button></div></div>`).join(''):'<small class="text-muted">No queue. Click Join Queue or login as driver to auto-join.</small>';
+  if($('queueMonitor')) $('queueMonitor').innerHTML=queue.length?queue.map((q,i)=>`<div class="d-flex justify-content-between align-items-center p-2 border rounded mb-1"><span style="font-size:11px">#${i+1} ${q.name}</span><span class="badge-status bg-queuing">Queuing</span></div>`).join(''):'<small class="text-muted">No drivers in queue.</small>';
+  if($('attendanceTable')) $('attendanceTable').innerHTML=attendance.length?attendance.map(a=>`<tr><td>${a.date}</td><td>${a.driver} ${a.username?`(${a.username})`:''}</td><td><span class="badge-status ${a.status==='Present'?'bg-active':'bg-inactive'}">${a.status}</span></td><td>${a.time}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteAttendance(${a.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join(''):'<tr><td colspan="5" class="text-center text-muted">No attendance records yet.</td></tr>';
+  if($('tripTable')) $('tripTable').innerHTML=trips.map(t=>`<tr><td>${t.date}</td><td>${t.driver}</td><td>${t.destination}</td><td>${t.passenger}</td><td>₱${t.fare}</td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteTrip(${t.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
+  if($('boundaryTable')) $('boundaryTable').innerHTML=boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td><span class="badge-status ${b.status==='Paid'?'bg-active':'bg-inactive'}">${b.status}</span></td><td><button class="btn btn-sm btn-light" style="padding:2px 6px;font-size:10px" onclick="deleteBoundary(${b.id||0})"><i class="bi bi-x-lg"></i></button></td></tr>`).join('');
+  if($('incomeTable')) $('incomeTable').innerHTML=boundaries.length?boundaries.map(b=>`<tr><td>${b.date}</td><td>${b.driver}</td><td>₱${b.amount}</td><td>${b.status}</td></tr>`).join(''):'<tr><td colspan="4" class="text-center text-muted">No records yet.</td></tr>';
+  if($('userTable')) $('userTable').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.name}</td><td>${u.role}</td><td><span class="badge-status ${u.status==='Active'?'bg-active':u.status==='Pending'?'bg-pending':'bg-inactive'}">${u.status}</span></td></tr>`).join('');
 }
-$('joinQueueBtn').onclick=()=>{
+if($('joinQueueBtn')) $('joinQueueBtn').onclick=()=>{
   if(!currentUser){ alert('Please login first'); return; }
   const name=currentUser.name||currentUser.username;
   if(queue.find(q=>q.username===currentUser.username)){ alert('You are already in queue'); return; }
   queue.push({name:name, username:currentUser.username, time:new Date().toLocaleTimeString(), joinedAt: Date.now()});
   saveQueue(); renderAll();
 };
-$('leaveQueueBtn').onclick=()=>{
+if($('leaveQueueBtn')) $('leaveQueueBtn').onclick=()=>{
   if(!currentUser) return;
   queue=queue.filter(q=>q.username!==currentUser.username);
   saveQueue(); renderAll();
-  $('myQueueStatus').innerHTML=`<div class="alert alert-warning p-2" style="font-size:11px">You left the queue</div>`;
+  const el=$('myQueueStatus');
+  if(el) el.innerHTML=`<div class="alert alert-warning p-2" style="font-size:11px">You left the queue</div>`;
 };
-$('nextQ').onclick=()=>{if(queue.length){queue.shift();saveQueue();renderAll();}else alert('Queue is empty');};
-$('clearQ').onclick=()=>{queue=[];saveQueue();renderAll();};
-$('addAttendance').onclick=()=>{
+if($('nextQ')) $('nextQ').onclick=()=>{if(queue.length){queue.shift();saveQueue();renderAll();}else alert('Queue is empty');};
+if($('clearQ')) $('clearQ').onclick=()=>{queue=[];saveQueue();renderAll();};
+if($('addAttendance')) $('addAttendance').onclick=()=>{
   const driver=$('aDriver').value.trim()||(currentUser?currentUser.name:'');
   const status=$('aStatus').value;
   const today = new Date().toLocaleDateString();
   const username = currentUser?currentUser.username:'';
   if(!driver){alert('Enter driver name');return;}
-  // Check duplicate - same user same date
   const duplicate = attendance.find(a=> a.date===today && (a.username===username || a.driver===driver));
   if(duplicate){ alert('You already recorded attendance today - '+today); return; }
   attendance.push({id: Date.now(), date:today, driver, status, time:new Date().toLocaleTimeString(), username:username, createdBy:username});
-  saveAttendance(); $('aDriver').value=currentUser?currentUser.name:''; renderAll();
+  saveAttendance(); if($('aDriver')) $('aDriver').value=currentUser?currentUser.name:''; renderAll();
 };
 function deleteAttendance(id){
   if(!confirm('Delete this attendance record?')) return;
-  attendance = attendance.filter(a=> a.id!==id);
+  attendance = attendance.filter(a=> a.id!==id && a.id!==id.toString());
+  if(attendance.length===0 || id===0){
+    // Fallback delete by index if id 0
+    attendance = attendance.filter((a,i)=> a.id!==0);
+  }
   saveAttendance(); renderAll();
 }
 function deleteQueueByUsername(username){
@@ -448,15 +363,103 @@ function deleteBoundary(id){
   boundaries = boundaries.filter(b=> b.id!==id);
   saveBoundary(); renderAll();
 }
-$('addTrip').onclick=()=>{
+if($('addTrip')) $('addTrip').onclick=()=>{
   const driver=$('trDriver').value.trim()||(currentUser?currentUser.name:'');
   const destination=$('trDestination').value.trim(),passenger=$('trPassenger').value.trim(),fare=$('trFare').value.trim();
   if(!driver||!destination){alert('Fill driver and destination');return;}
   trips.push({id: Date.now(), date:new Date().toLocaleDateString(),driver,destination,passenger,fare:fare||50,username:currentUser?currentUser.username:''});
   saveTrips(); $('trDestination').value='';$('trPassenger').value='';$('trFare').value=''; renderAll();
 };
-$('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({id: Date.now(), date,driver,amount:parseInt(amount),status,username:currentUser?currentUser.username:''}); saveBoundary(); $('bDriver').value='';$('bAmount').value='';renderAll();};
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+if($('addBoundary')) $('addBoundary').onclick=()=>{const driver=$('bDriver').value.trim(),amount=$('bAmount').value.trim(),date=$('bDate').value||new Date().toISOString().split('T')[0],status=$('bStatus').value;if(!driver||!amount){alert('Fill driver and amount');return;}boundaries.push({id: Date.now(), date,driver,amount:parseInt(amount),status,username:currentUser?currentUser.username:''}); saveBoundary(); $('bDriver').value='';$('bAmount').value='';renderAll();};
+// Enter key support - FIXED - LOG IN LANG
+function handleLoginEnter(e){ if(e.key==='Enter'){ $('loginBtn').click(); } }
+if($('username')) $('username').addEventListener('keydown', handleLoginEnter);
+if($('password')) $('password').addEventListener('keydown', handleLoginEnter);
+if($('regUsername')) $('regUsername').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
+if($('regPassword')) $('regPassword').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('registerBtn').click(); });
+// Login - FIXED - MAG REREKTA SA DASHBOARD
+if($('loginBtn')) $('loginBtn').onclick=async()=>{
+  const username=$('username').value.trim(),password=$('password').value.trim();
+  if(!username||!password){$('msg').textContent='Please enter username and password';return;}
+  $('msg').textContent='Authenticating...';
+  try{
+    const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+    const d=await r.json();
+    if(d.success){
+      currentUser=d.user;
+      if(currentUser.status!=='Active'){
+        currentUser.status='Active';
+      }
+      if($('userInfo')) $('userInfo').textContent=`${d.user.role} | ${d.user.name} | ${d.user.username} | ${currentUser.status}`;
+      saveSession(currentUser);
+      loginWrapper.classList.add('hidden');registerWrapper.classList.add('hidden');dash.classList.remove('hidden');
+      applyRoleVisibility(d.user.role);
+      await Promise.all([loadUsers(), loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
+      autoFillDriverFields();
+      if(d.user.role==='driver' || d.user.role==='admin'){ autoJoinQueue(); }
+      renderAll();
+      $('msg').textContent='';
+    } else {
+      $('msg').textContent=d.message;
+    }
+  }catch(e){
+    // Offline fallback - check ADMIN_ACCOUNTS array - TODA QC LANG
+    const adminFound = ADMIN_ACCOUNTS.find(a=> a.username===username && a.password===password);
+    if(adminFound){
+      currentUser=adminFound;
+      if($('userInfo')) $('userInfo').textContent=`${adminFound.role} | ${adminFound.name} | ${adminFound.username} | Active`;
+      saveSession(currentUser);
+      loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
+      applyRoleVisibility('admin');
+      await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary(), loadUsers()]);
+      renderAll();
+      $('msg').textContent='';
+      return;
+    }
+    const found=users.find(u=>u.username===username&&u.password===password);
+    if(found){
+      currentUser=found;currentUser.status='Active';
+      if($('userInfo')) $('userInfo').textContent=`${found.role} | ${found.name} | ${found.username} | Active`;
+      saveSession(currentUser);
+      loginWrapper.classList.add('hidden');dash.classList.remove('hidden');
+      applyRoleVisibility(found.role);
+      await Promise.all([loadQueue(), loadAttendance(), loadTrips(), loadBoundary()]);
+      autoFillDriverFields();
+      if(found.role==='driver'){ autoJoinQueue(); }
+      renderAll();
+      $('msg').textContent='';
+    } else {
+      $('msg').textContent='Invalid username or password';
+    }
+  }
+};
+if($('registerBtn')) $('registerBtn').onclick=async()=>{
+  const name=$('regName').value.trim(),username=$('regUsername').value.trim(),password=$('regPassword').value.trim(),role=$('regRole').value;
+  if(!name||!username||!password){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Please fill all fields';return;}
+  if(username.length<3){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Username must be at least 3 characters';return;}
+  if(password.length<6){$('regMsg').style.color='#dc2626';$('regMsg').textContent='Password must be at least 6 characters';return;}
+  $('regMsg').style.color='#6b7280';$('regMsg').textContent='Creating account...';
+  try{
+    const r=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,username,password,role})});
+    const d=await r.json();
+    if(d.success){
+      $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created - You can now login: '+d.user.username;
+      $('regName').value='';$('regUsername').value='';$('regPassword').value='';
+      setTimeout(()=>{$('showLogin').click();$('username').value=d.user.username;},1200);
+    }else{$('regMsg').style.color='#dc2626';$('regMsg').textContent=d.message;}
+  }catch(e){
+    if(users.find(u=>u.username===username)){ $('regMsg').style.color='#dc2626';$('regMsg').textContent='Username already exists'; return; }
+    users.push({username,name,role,password,status:'Active'});
+    localStorage.setItem('toda_users_backup', JSON.stringify(users));
+    $('regMsg').style.color='#16a34a';$('regMsg').textContent='Account created (local) - You can now login: '+username;
+    $('regName').value='';$('regUsername').value='';$('regPassword').value='';
+    setTimeout(()=>{$('showLogin').click();$('username').value=username;},1200);
+  }
+};
+if('serviceWorker' in navigator){
+  // Unregister old SW to clear cache
+  navigator.serviceWorker.getRegistrations().then(regs=>{ regs.forEach(r=>r.unregister()); });
+}
 renderAll();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
